@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Agent Monitor</title>
+
+  <!-- Bootstrap 5 -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Bootstrap Icons -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    rel="stylesheet"
+  />
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* =========================================================
+       ROOT VARIABLES & BASE
+    ========================================================= */
+    :root {
+      --bg:        #0b0e14;
+      --surface:   #111720;
+      --border:    #1e2a38;
+      --accent:    #00e5ff;
+      --accent2:   #7c4dff;
+      --text:      #d0dae8;
+      --muted:     #4a5568;
+      --green:     #00e676;
+      --yellow:    #ffea00;
+      --red:       #ff1744;
+      --mono:      'Share Tech Mono', monospace;
+      --sans:      'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family:      var(--sans);
+      background-color: var(--bg);
+      color:            var(--text);
+      min-height:       100vh;
+      padding-bottom:   4rem;
+    }
+
+    /* =========================================================
+       HEADER
+    ========================================================= */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--surface);
+    }
+
+    .logo-icon {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      font-family: var(--mono);
+      font-size:   1.1rem;
+      color:       var(--accent);
+      letter-spacing: 0.08em;
+    }
+
+    .logo-sub {
+      font-size: 0.72rem;
+      color:     var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* =========================================================
+       LAYOUT
+    ========================================================= */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 1.5rem;
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    @media (max-width: 860px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    /* =========================================================
+       CARD COMPONENT
+    ========================================================= */
+    .card {
+      background:    var(--surface);
+      border:        1px solid var(--border);
+      border-radius: 12px;
+      padding:       1.5rem;
+    }
+
+    .card-label {
+      font-size:      0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color:          var(--muted);
+      margin-bottom:  1rem;
+      display:        flex;
+      align-items:    center;
+      gap:            0.4rem;
+    }
+
+    /* =========================================================
+       FORM
+    ========================================================= */
+    label {
+      display:       block;
+      font-size:     0.8rem;
+      color:         var(--muted);
+      margin-bottom: 0.35rem;
+      letter-spacing: 0.04em;
+    }
+
+    textarea, input[type="text"] {
+      width:            100%;
+      background:       #0d1520;
+      border:           1px solid var(--border);
+      border-radius:    8px;
+      color:            var(--text);
+      font-family:      var(--sans);
+      font-size:        0.88rem;
+      padding:          0.65rem 0.85rem;
+      resize:           vertical;
+      transition:       border-color 0.2s;
+      outline:          none;
+    }
+
+    textarea:focus, input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow:   0 0 0 3px rgba(0,229,255,0.08);
+    }
+
+    .field-group { margin-bottom: 1rem; }
+
+    .btn-run {
+      width:         100%;
+      background:    linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      color:         #000;
+      font-weight:   600;
+      font-size:     0.88rem;
+      letter-spacing:0.06em;
+      border:        none;
+      border-radius: 8px;
+      padding:       0.75rem;
+      cursor:        pointer;
+      margin-top:    0.5rem;
+      transition:    opacity 0.2s, transform 0.1s;
+    }
+
+    .btn-run:hover  { opacity: 0.88; }
+    .btn-run:active { transform: scale(0.98); }
+    .btn-run:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* =========================================================
+       RESULTS PANEL
+    ========================================================= */
+    #results-panel { display: none; }
+
+    /* Response box */
+    .ai-response-box {
+      background:    #0d1520;
+      border:        1px solid var(--border);
+      border-radius: 8px;
+      padding:       1rem;
+      font-size:     0.88rem;
+      line-height:   1.65;
+      white-space:   pre-wrap;
+      word-break:    break-word;
+      max-height:    220px;
+      overflow-y:    auto;
+      color: #ffffff;
+    }
+
+    /* =========================================================
+       METRIC TILES
+    ========================================================= */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.85rem;
+      margin-top: 1.25rem;
+    }
+
+    .metric-tile {
+      background:    #0d1520;
+      border:        1px solid var(--border);
+      border-radius: 10px;
+      padding:       1rem;
+      position:      relative;
+      overflow:      hidden;
+    }
+
+    .metric-tile::before {
+      content:  '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 10px 10px 0 0;
+    }
+
+    .metric-tile.green::before  { background: var(--green); }
+    .metric-tile.yellow::before { background: var(--yellow); }
+    .metric-tile.red::before    { background: var(--red); }
+
+    .metric-name {
+      font-size:      0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color:          var(--muted);
+      margin-bottom:  0.4rem;
+    }
+
+    .metric-value {
+      font-family: var(--mono);
+      font-size:   1.75rem;
+      line-height: 1;
+      color:       var(--text);
+    }
+
+    .metric-value span { font-size: 0.9rem; color: var(--muted); }
+
+    .metric-badge {
+      display:       inline-block;
+      margin-top:    0.5rem;
+      font-size:     0.68rem;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      padding:       0.2rem 0.55rem;
+      border-radius: 4px;
+      font-weight:   600;
+    }
+
+    .badge-success { background: rgba(0,230,118,0.15); color: var(--green); }
+    .badge-warning { background: rgba(255,234,0,0.15);  color: var(--yellow);}
+    .badge-danger  { background: rgba(255,23,68,0.15);   color: var(--red);  }
+
+    /* =========================================================
+       HEALTH SCORE — big display
+    ========================================================= */
+    .health-card {
+      display:     flex;
+      align-items: center;
+      gap:         1.5rem;
+      margin-top:  1.25rem;
+      background:  #0d1520;
+      border:      1px solid var(--border);
+      border-radius: 12px;
+      padding:     1.25rem 1.5rem;
+    }
+
+    .health-ring {
+      position:      relative;
+      width:         80px;
+      height:        80px;
+      flex-shrink:   0;
+    }
+
+    .health-ring svg { transform: rotate(-90deg); }
+
+    .health-ring-text {
+      position:   absolute;
+      inset:      0;
+      display:    flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size:   1.1rem;
+      color:       var(--text);
+    }
+
+    .health-label {
+      font-size:   1.3rem;
+      font-weight: 600;
+      color:       var(--text);
+    }
+
+    .health-sub {
+      font-size: 0.78rem;
+      color:     var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    /* =========================================================
+       LOADER SPINNER
+    ========================================================= */
+    #loader {
+      display:     none;
+      text-align:  center;
+      padding:     2rem;
+      color:       var(--muted);
+      font-size:   0.85rem;
+    }
+
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 0.75rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* =========================================================
+       ERROR ALERT
+    ========================================================= */
+    #error-box {
+      display:       none;
+      background:    rgba(255,23,68,0.1);
+      border:        1px solid rgba(255,23,68,0.3);
+      border-radius: 8px;
+      padding:       0.8rem 1rem;
+      font-size:     0.85rem;
+      color:         var(--red);
+      margin-top:    1rem;
+    }
+
+    /* =========================================================
+       QUERY ECHO
+    ========================================================= */
+    .query-echo {
+      font-size:  0.82rem;
+      color:      var(--muted);
+      margin-top: 0.5rem;
+      font-style: italic;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================================================
+       HEADER
+  ========================================================= -->
+  <header>
+    <div class="logo-icon">🤖</div>
+    <div>
+      <div class="logo-text">AI_AGENT_MONITOR</div>
+      <div class="logo-sub">Customer Support Evaluation System</div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       MAIN GRID
+  ========================================================= -->
+  <div class="main-grid">
+
+    <!-- LEFT: Input Panel -->
+    <div>
+      <div class="card">
+        <div class="card-label">
+          <i class="bi bi-terminal-fill"></i> Evaluation Input
+        </div>
+
+        <div class="field-group">
+          <label for="customer_issue">Customer Issue</label>
+          <textarea
+            id="customer_issue"
+            rows="5"
+            placeholder="e.g. I ordered a laptop 2 weeks ago and it still hasn't arrived. No tracking update either."
+          ></textarea>
+        </div>
+
+        <div class="field-group">
+          <label for="expected_goal">Expected Resolution Goal</label>
+          <textarea
+            id="expected_goal"
+            rows="3"
+            placeholder="e.g. Agent should provide tracking info and offer a refund or replacement."
+          ></textarea>
+        </div>
+
+        <button class="btn-run" id="run-btn" onclick="runEvaluation()">
+          <i class="bi bi-play-fill"></i>&nbsp; Run Evaluation
+        </button>
+
+        <div id="error-box"></div>
+      </div>
+
+      <!-- Info box -->
+      <div class="card" style="margin-top:1rem; font-size:0.8rem; color: var(--muted); line-height:1.7;">
+        <div class="card-label"><i class="bi bi-info-circle"></i> Metric Definitions</div>
+        <p><strong style="color:var(--text)">Goal Success</strong> — keyword overlap between the expected goal and AI response.</p>
+        <p style="margin-top:0.5rem"><strong style="color:var(--text)">Hallucination Risk</strong> — rule-based check for fabricated numbers, overconfident language, or invented URLs.</p>
+        <p style="margin-top:0.5rem"><strong style="color:var(--text)">Latency</strong> — total round-trip time to Groq API.</p>
+      </div>
+    </div>
+
+    <!-- RIGHT: Results Panel -->
+    <div>
+
+      <!-- Loader -->
+      <div id="loader">
+        <div class="spinner"></div>
+        Sending to AI agent &amp; evaluating…
+      </div>
+
+      <!-- Results (hidden until first run) -->
+      <div id="results-panel">
+
+        <!-- AI Response -->
+        <div class="card">
+          <div class="card-label">
+            <i class="bi bi-chat-left-text-fill"></i> AI Agent Response
+          </div>
+          <div class="ai-response-box" id="ai-response-text"></div>
+          <div class="query-echo" id="query-echo"></div>
+        </div>
+
+        <!-- Metrics -->
+        <div class="card" style="margin-top:1rem;">
+          <div class="card-label">
+            <i class="bi bi-bar-chart-fill"></i> Evaluation Metrics
+          </div>
+
+          <div class="metrics-grid">
+
+            <!-- Goal Success -->
+            <div class="metric-tile" id="goal-tile">
+              <div class="metric-name">Goal Success</div>
+              <div class="metric-value" id="goal-value">—<span>%</span></div>
+              <div class="metric-badge" id="goal-badge"></div>
+            </div>
+
+            <!-- Hallucination Risk -->
+            <div class="metric-tile" id="hall-tile">
+              <div class="metric-name">Hallucination Risk</div>
+              <div class="metric-value" id="hall-value">—<span>%</span></div>
+              <div class="metric-badge" id="hall-badge"></div>
+            </div>
+
+            <!-- Latency -->
+            <div class="metric-tile" id="lat-tile">
+              <div class="metric-name">Response Latency</div>
+              <div class="metric-value" id="lat-value">—<span>ms</span></div>
+              <div class="metric-badge" id="lat-badge"></div>
+            </div>
+
+            <!-- Placeholder / filler -->
+            <div class="metric-tile" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:0.75rem;letter-spacing:0.08em;">
+              MORE METRICS<br>COMING SOON
+            </div>
+
+          </div>
+
+          <!-- Overall Health -->
+          <div class="health-card">
+            <div class="health-ring">
+              <svg width="80" height="80" viewBox="0 0 80 80">
+                <!-- Background track -->
+                <circle cx="40" cy="40" r="32" fill="none" stroke="#1e2a38" stroke-width="8"/>
+                <!-- Coloured arc -->
+                <circle
+                  cx="40" cy="40" r="32" fill="none"
+                  stroke-width="8"
+                  stroke-linecap="round"
+                  id="health-arc"
+                  stroke-dasharray="0 201"
+                  style="transition: stroke-dasharray 0.8s ease, stroke 0.4s;"
+                />
+              </svg>
+              <div class="health-ring-text" id="health-ring-text">—</div>
+            </div>
+            <div>
+              <div class="health-label" id="health-label">Awaiting evaluation</div>
+              <div class="health-sub">
+                Overall Agent Health &nbsp;·&nbsp;
+                <span style="font-family:var(--mono);font-size:0.75rem;" id="health-formula">
+                  50% goal + 30% safety + 20% latency
+                </span>
+              </div>
+              <div style="margin-top:0.5rem;">
+                <span class="metric-badge" id="health-badge-display"></span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /metrics card -->
+
+      </div><!-- /results-panel -->
+
+    </div>
+  </div><!-- /main-grid -->
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // =========================================================
+    // runEvaluation()
+    // Called when the user clicks "Run Evaluation".
+    // Sends POST to /evaluate and populates the dashboard.
+    // =========================================================
+    async function runEvaluation() {
+      const issue = document.getElementById("customer_issue").value.trim();
+      const goal  = document.getElementById("expected_goal").value.trim();
+      const btn   = document.getElementById("run-btn");
+      const errBox= document.getElementById("error-box");
+
+      // Reset error
+      errBox.style.display = "none";
+
+      if (!issue || !goal) {
+        showError("Please fill in both fields before running.");
+        return;
+      }
+
+      // Show loader, hide results, disable button
+      btn.disabled = true;
+      document.getElementById("loader").style.display = "block";
+      document.getElementById("results-panel").style.display = "none";
+
+      try {
+        const res  = await fetch("/evaluate", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify({ customer_issue: issue, expected_goal: goal }),
+        });
+        const data = await res.json();
+
+        if (data.error) { showError(data.error); return; }
+
+        populateDashboard(data);
+        document.getElementById("results-panel").style.display = "block";
+
+      } catch (err) {
+        showError("Network error: " + err.message);
+      } finally {
+        btn.disabled = false;
+        document.getElementById("loader").style.display = "none";
+      }
+    }
+
+    // =========================================================
+    // populateDashboard(data)
+    // Fills all dashboard elements from the API response object.
+    // =========================================================
+    function populateDashboard(d) {
+
+      // AI response + query echo
+      document.getElementById("ai-response-text").textContent = d.ai_response;
+      document.getElementById("query-echo").textContent =
+        `Issue: "${truncate(d.customer_issue, 80)}"`;
+
+      // ---- Goal Success ----
+      setMetricTile(
+        "goal-tile", "goal-value", "goal-badge",
+        d.goal_score, "%", d.goal_badge,
+        { success:"Goal Met", warning:"Partial", danger:"Missed" }
+      );
+
+      // ---- Hallucination Risk (inverted colour: high risk = red) ----
+      setMetricTile(
+        "hall-tile", "hall-value", "hall-badge",
+        d.hallucination_score, "%", d.hallucination_badge,
+        { success:"Low Risk", warning:"Moderate", danger:"High Risk" }
+      );
+
+      // ---- Latency ----
+      setMetricTile(
+        "lat-tile", "lat-value", "lat-badge",
+        d.latency_ms, "ms", d.latency_badge,
+        { success:"Fast", warning:"Moderate", danger:"Slow" }
+      );
+
+      // ---- Health Ring ----
+      const arc    = document.getElementById("health-arc");
+      const CIRCUM = 2 * Math.PI * 32;   // ≈ 201
+      const dash   = (d.health_score / 100) * CIRCUM;
+      arc.style.strokeDasharray = `${dash} ${CIRCUM}`;
+      arc.style.stroke = healthColour(d.health_score);
+      document.getElementById("health-ring-text").textContent = d.health_score;
+
+      // Label & badge
+      const labels = { success:"Healthy", warning:"Needs Attention", danger:"Critical" };
+      document.getElementById("health-label").textContent = labels[d.health_badge] ?? "Unknown";
+
+      const hBadge = document.getElementById("health-badge-display");
+      hBadge.textContent  = labels[d.health_badge] ?? "";
+      hBadge.className    = `metric-badge badge-${d.health_badge}`;
+    }
+
+    // =========================================================
+    // setMetricTile — helper to update a single metric tile
+    // =========================================================
+    function setMetricTile(tileId, valueId, badgeId, value, unit, badgeType, labels) {
+      const tile  = document.getElementById(tileId);
+      const valEl = document.getElementById(valueId);
+      const badEl = document.getElementById(badgeId);
+
+      // Colour stripe
+      tile.className = `metric-tile ${badgeType === "success" ? "green" : badgeType === "warning" ? "yellow" : "red"}`;
+
+      // Number
+      valEl.innerHTML = `${value}<span>${unit}</span>`;
+
+      // Badge
+      badEl.textContent = labels[badgeType] ?? badgeType;
+      badEl.className   = `metric-badge badge-${badgeType}`;
+    }
+
+    // =========================================================
+    // healthColour — arc stroke colour based on score
+    // =========================================================
+    function healthColour(score) {
+      if (score >= 70) return "var(--green)";
+      if (score >= 40) return "var(--yellow)";
+      return "var(--red)";
+    }
+
+    // =========================================================
+    // showError
+    // =========================================================
+    function showError(msg) {
+      const box = document.getElementById("error-box");
+      box.textContent  = "⚠ " + msg;
+      box.style.display = "block";
+      document.getElementById("loader").style.display = "none";
+    }
+
+    // =========================================================
+    // truncate helper
+    // =========================================================
+    function truncate(str, n) {
+      return str.length > n ? str.slice(0, n) + "…" : str;
+    }
+  </script>
+
+</body>
+</html>

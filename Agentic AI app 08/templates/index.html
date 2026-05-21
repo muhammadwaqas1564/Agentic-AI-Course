@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResearchFlow Lite - Multi-Agent Research Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔬 ResearchFlow Lite</h1>
+            <p>Multi-Agent AI Research Assistant</p>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <form id="researchForm">
+                    <div class="form-group">
+                        <label for="topic">Enter Research Topic:</label>
+                        <input type="text" 
+                               id="topic" 
+                               name="topic" 
+                               placeholder="e.g., Quantum Computing, Climate Change, Artificial Intelligence"
+                               required>
+                    </div>
+                    <button type="submit" id="submitBtn">
+                        <span class="btn-text">Start Research</span>
+                        <span class="loader hidden"></span>
+                    </button>
+                </form>
+            </div>
+
+            <div id="workflowStatus" class="workflow-status hidden">
+                <h3>🤖 Agent Workflow</h3>
+                <div id="statusLog" class="status-log"></div>
+            </div>
+
+            <div id="results" class="results hidden">
+                <div class="result-header">
+                    <h2>📊 Research Summary</h2>
+                    <button id="copyBtn" class="copy-btn">📋 Copy</button>
+                </div>
+                <div id="researchOutput" class="research-output"></div>
+                
+                <div id="metadata" class="metadata hidden"></div>
+            </div>
+
+            <div id="error" class="error hidden"></div>
+        </main>
+
+        <footer>
+            <p>Powered by Multi-Agent AI | Ollama | Flask</p>
+        </footer>
+    </div>
+
+    <script>
+        const form = document.getElementById('researchForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const topicInput = document.getElementById('topic');
+        const workflowStatus = document.getElementById('workflowStatus');
+        const statusLog = document.getElementById('statusLog');
+        const resultsDiv = document.getElementById('results');
+        const researchOutput = document.getElementById('researchOutput');
+        const errorDiv = document.getElementById('error');
+        const metadataDiv = document.getElementById('metadata');
+        const copyBtn = document.getElementById('copyBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const topic = topicInput.value.trim();
+            if (!topic) return;
+            
+            // Reset UI
+            resetUI();
+            showWorkflowStatus();
+            addWorkflowStep('Starting ResearchFlow Lite...', 'info');
+            
+            try {
+                submitBtn.disabled = true;
+                showLoading();
+                
+                addWorkflowStep(`Topic: "${topic}"`, 'info');
+                addWorkflowStep('Supervisor Agent initialized', 'agent');
+                
+                const response = await fetch('/research', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ topic: topic })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Research failed');
+                }
+                
+                addWorkflowStep('Supervisor Agent: Orchestrating workflow', 'agent');
+                addWorkflowStep('→ Research Agent: Fetching data from arXiv & Wikipedia', 'agent');
+                
+                // Simulate workflow steps (actual steps from backend could be used)
+                setTimeout(() => {
+                    addWorkflowStep('→ Summarizer Agent: Generating research summary', 'agent');
+                }, 500);
+                
+                setTimeout(() => {
+                    addWorkflowStep('→ Reviewer Agent: Improving quality and adding citations', 'agent');
+                }, 1000);
+                
+                setTimeout(() => {
+                    addWorkflowStep('✅ Research completed successfully!', 'success');
+                    displayResults(data);
+                    hideLoading();
+                    submitBtn.disabled = false;
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showError(error.message);
+                hideLoading();
+                submitBtn.disabled = false;
+            }
+        });
+        
+        function resetUI() {
+            resultsDiv.classList.add('hidden');
+            errorDiv.classList.add('hidden');
+            errorDiv.innerHTML = '';
+            researchOutput.innerHTML = '';
+            metadataDiv.classList.add('hidden');
+            statusLog.innerHTML = '';
+        }
+        
+        function showWorkflowStatus() {
+            workflowStatus.classList.remove('hidden');
+        }
+        
+        function addWorkflowStep(message, type) {
+            const step = document.createElement('div');
+            step.className = `step step-${type}`;
+            step.textContent = message;
+            statusLog.appendChild(step);
+            step.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        function displayResults(data) {
+            if (data.success && data.research_result) {
+                const result = data.research_result;
+                
+                // Format research summary with markdown-like styling
+                let summaryHtml = result.research_summary
+                    .replace(/\n\n/g, '</p><p>')
+                    .replace(/\n/g, '<br>')
+                    .replace(/## (.*?)(?=<|$)/g, '<h3>$1</h3>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                
+                researchOutput.innerHTML = `<p>${summaryHtml}</p>`;
+                
+                // Display metadata
+                if (result.metadata) {
+                    const metaHtml = `
+                        <h3>📈 Research Statistics</h3>
+                        <ul>
+                            <li>📚 Sources Found: ${result.metadata.total_sources}</li>
+                            <li>🤖 Agents Used: ${result.metadata.agents_executed.join(', ')}</li>
+                            <li>🎯 Topic: ${result.topic}</li>
+                        </ul>
+                    `;
+                    metadataDiv.innerHTML = metaHtml;
+                    metadataDiv.classList.remove('hidden');
+                }
+                
+                resultsDiv.classList.remove('hidden');
+                
+                // Add final success step
+                addWorkflowStep(`✨ Final response ready for: ${result.topic}`, 'success');
+            } else {
+                showError('Invalid response format from server');
+            }
+        }
+        
+        function showError(message) {
+            errorDiv.innerHTML = `<strong>❌ Error:</strong> ${message}`;
+            errorDiv.classList.remove('hidden');
+            resultsDiv.classList.add('hidden');
+        }
+        
+        function showLoading() {
+            const btnText = submitBtn.querySelector('.btn-text');
+            const loader = submitBtn.querySelector('.loader');
+            btnText.classList.add('hidden');
+            loader.classList.remove('hidden');
+        }
+        
+        function hideLoading() {
+            const btnText = submitBtn.querySelector('.btn-text');
+            const loader = submitBtn.querySelector('.loader');
+            btnText.classList.remove('hidden');
+            loader.classList.add('hidden');
+        }
+        
+        copyBtn.addEventListener('click', () => {
+            const text = researchOutput.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                copyBtn.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    copyBtn.textContent = '📋 Copy';
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

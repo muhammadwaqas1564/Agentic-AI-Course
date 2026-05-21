@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — CareerMindAI{% endblock %}
+
+{% block content %}
+<div class="flex-between fade-in mb-6">
+  <div>
+    <h1 class="page-title">Career Dashboard</h1>
+    <p class="page-sub">AI analysis of <strong>{{ profile.filename }}</strong> — {{ profile.created_at.strftime('%d %b %Y') }}</p>
+  </div>
+  <a href="{{ url_for('upload') }}" class="btn btn-secondary btn-sm">↑ New CV</a>
+</div>
+
+<!-- ── Stat row ── -->
+<div class="grid-4 fade-in fade-in-1 mb-6">
+  <div class="stat-card">
+    <div class="stat-label">Skills Extracted</div>
+    <div class="stat-value">{{ profile.get_skills()|length }}</div>
+    <span class="stat-badge badge-blue">via NLP</span>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Career Paths</div>
+    <div class="stat-value">{{ profile.get_career_paths()|length }}</div>
+    <span class="stat-badge badge-cyan">suggested</span>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Job Matches</div>
+    <div class="stat-value">{{ profile.job_matches|length }}</div>
+    <span class="stat-badge badge-green">ranked</span>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Education Entries</div>
+    <div class="stat-value">{{ profile.get_education()|length }}</div>
+    <span class="stat-badge badge-amber">detected</span>
+  </div>
+</div>
+
+<!-- ── Main grid ── -->
+<div class="dash-layout fade-in fade-in-2">
+
+  <!-- Left column -->
+  <div class="dash-left">
+
+    <!-- Skills -->
+    <div class="card mb-6">
+      <div class="card-title">Extracted Skills</div>
+      <div class="skill-tags">
+        {% for skill in profile.get_skills() %}
+          <span class="skill-tag">{{ skill }}</span>
+        {% else %}
+          <p class="text-muted text-sm">No skills detected. Try uploading a more detailed CV.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Career Paths -->
+    <div class="card mb-6">
+      <div class="card-title">Suggested Career Paths</div>
+      {% set paths = profile.get_career_paths() %}
+      {% set scores = profile.get_confidence_scores() %}
+      {% if paths %}
+        <div class="paths-grid">
+          {% for path in paths %}
+          <div class="path-card">
+            <div class="path-title">{{ path.title }}</div>
+            <span class="path-readiness readiness-{{ path.readiness }}">{{ path.readiness }}</span>
+            <p class="path-desc">{{ path.description }}</p>
+            {% if scores.get(path.title) %}
+            <div class="mt-4">
+              <div class="flex-between text-sm text-muted mb-4">
+                <span>Confidence</span>
+                <span class="font-mono">{{ scores[path.title]|int }}%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" data-width="{{ scores[path.title]|int }}" style="width:0%"></div>
+              </div>
+            </div>
+            {% endif %}
+            <div class="flex gap-2 mt-4">
+              <button class="btn btn-secondary btn-sm"
+                onclick="generateRoadmap('{{ path.title }}')">
+                ⬖ Roadmap
+              </button>
+              <a href="{{ url_for('jobs') }}" class="btn btn-primary btn-sm">◫ Jobs</a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted text-sm">No career paths generated yet.</p>
+      {% endif %}
+    </div>
+
+    <!-- Skill Gaps -->
+    {% set gaps = profile.get_skill_gaps() %}
+    {% if gaps %}
+    <div class="card mb-6">
+      <div class="card-title">Skill Gap Analysis</div>
+      {% for career, missing_skills in gaps.items() %}
+      {% if missing_skills %}
+      <div class="gap-row">
+        <div class="gap-career">{{ career }}</div>
+        <div class="skill-tags mt-2">
+          {% for s in missing_skills %}
+          <span class="skill-tag gap-skill">{{ s }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Education -->
+    {% set education = profile.get_education() %}
+    {% if education %}
+    <div class="card">
+      <div class="card-title">Education</div>
+      {% for edu in education[:5] %}
+      <div class="edu-row">
+        <div class="edu-text">{{ edu.text }}</div>
+        {% if edu.years %}
+        <div class="edu-year font-mono text-sm text-muted">{{ edu.years|join(' – ') }}</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- Right column -->
+  <div class="dash-right">
+
+    <!-- Readiness note -->
+    {% set paths = profile.get_career_paths() %}
+    {% if paths %}
+    <div class="card card-accent mb-6">
+      <div class="card-title">Agent Assessment</div>
+      <p class="text-sm" style="line-height:1.8; color: var(--text-muted);">
+        {{ profile.get_confidence_scores() | tojson | safe if false else
+           "Based on your profile, the agent has evaluated your readiness and matched opportunities. Review the career paths and use the roadmap to close skill gaps strategically." }}
+      </p>
+    </div>
+    {% endif %}
+
+    <!-- Top job matches preview -->
+    {% if profile.job_matches %}
+    <div class="card mb-6">
+      <div class="flex-between mb-4">
+        <div class="card-title" style="margin-bottom:0">Top Job Matches</div>
+        <a href="{{ url_for('jobs') }}" class="text-sm text-accent" style="text-decoration:none;">View all →</a>
+      </div>
+      {% for jm in profile.job_matches[:3] %}
+      <div class="mini-job-card">
+        <div class="mini-job-title">{{ jm.title }}</div>
+        <div class="mini-job-company text-muted text-sm">{{ jm.company }} · {{ jm.location }}</div>
+        <div class="mini-match">
+          <div class="progress-bar mt-2">
+            <div class="progress-fill" data-width="{{ jm.match_score|int }}" style="width:0%"></div>
+          </div>
+          <span class="text-sm font-mono" style="color:var(--accent)">{{ jm.match_score|int }}% match</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Experience -->
+    {% set experience = profile.get_experience() %}
+    {% if experience %}
+    <div class="card">
+      <div class="card-title">Experience</div>
+      {% for exp in experience[:3] %}
+      <div class="exp-row">
+        <p class="text-sm" style="color: var(--text-muted); line-height: 1.7;">{{ exp.text[:200] }}{% if exp.text|length > 200 %}…{% endif %}</p>
+        {% if exp.years %}
+        <span class="font-mono text-sm" style="color: var(--accent-2);">{{ exp.years|join(' – ') }}</span>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<style>
+.dash-layout { display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
+.dash-left, .dash-right { display: flex; flex-direction: column; }
+.paths-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+.gap-row { margin-bottom: 16px; }
+.gap-career { font-size: 13px; font-weight: 600; color: var(--text); }
+.gap-skill { color: var(--warn) !important; border-color: color-mix(in srgb, var(--warn) 30%, transparent) !important; background: color-mix(in srgb, var(--warn) 8%, transparent) !important; }
+.edu-row { padding: 12px 0; border-bottom: 1px solid var(--border-light); }
+.edu-row:last-child { border-bottom: none; }
+.edu-text { font-size: 13px; line-height: 1.5; margin-bottom: 4px; }
+.exp-row { padding: 12px 0; border-bottom: 1px solid var(--border-light); }
+.exp-row:last-child { border-bottom: none; }
+.mini-job-card { padding: 12px 0; border-bottom: 1px solid var(--border-light); }
+.mini-job-card:last-child { border-bottom: none; }
+.mini-job-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.mini-match { display: flex; align-items: center; gap: 10px; }
+.mini-match .progress-bar { flex: 1; }
+@media (max-width: 900px) { .dash-layout { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}

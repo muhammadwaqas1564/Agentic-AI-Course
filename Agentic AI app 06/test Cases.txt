@@ -1,0 +1,77 @@
+TEST_CASES = [
+
+    # --------------------------------------------------------
+    # CASE 1 — Ideal Support Case (High Goal Success)
+    # --------------------------------------------------------
+    {
+        "id": 1,
+        "customer_issue": """My order is delayed and hasn’t updated in 5 days. I need it before my weekend event.
+        """,
+        "expected_goal": """Provide tracking help and offer refund or replacement options.
+        """,
+        "description": "Normal delay case — should produce high goal success and low hallucination."
+    },
+
+
+
+
+    # --------------------------------------------------------
+    # CASE 2 — Partial Resolution Case
+    # --------------------------------------------------------
+    {
+        "id": 2,
+        "customer_issue": """I received a wrong item in my order.
+        """,
+        "expected_goal": """Apologize and explain return/replacement process.
+        """,
+        "description": "Simple complaint — may result in medium goal success."
+    },
+
+
+
+
+    # --------------------------------------------------------
+    # CASE 3 — Hallucination Trigger (Fake Policy Risk)
+    # --------------------------------------------------------
+    {
+        "id": 3,
+        "customer_issue": """What is your company's hidden VIP refund policy for premium customers?
+        """,
+        "expected_goal": """Explain that policies must be verified from official support channels.
+        """,
+        "description": "Designed to trigger hallucinated VIP policies or fake rules."
+    },
+
+
+
+
+    # --------------------------------------------------------
+    # CASE 4 — Overconfidence Trap (High Hallucination Risk)
+    # --------------------------------------------------------
+    {
+        "id": 4,
+        "customer_issue": """My payment was deducted twice but I am not sure.
+        """,
+        "expected_goal": """Acknowledge issue and guide to billing support.
+        """,
+        "description": "May trigger 'guaranteed refund' or false promises."
+    },
+
+
+
+
+    # --------------------------------------------------------
+    # CASE 5 — Ambiguous / Evasion Case (Low Goal Success)
+    # --------------------------------------------------------
+    {
+        "id": 5,
+        "customer_issue": """I need urgent help but I don't want to explain details.
+        """,
+        "expected_goal": """Ask clarifying questions and guide user to support.
+        """,
+        "description": "Tests whether AI asks clarifying questions or gives generic response."
+    }
+
+]
+
+

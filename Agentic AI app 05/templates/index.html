@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DocChat — RAG Document Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <span class="logo-icon">⬡</span>
+        <span class="logo-text">DocChat</span>
+      </div>
+      <p class="tagline">RAG-powered document intelligence</p>
+    </div>
+
+    <div class="upload-section">
+      <div class="upload-label">DOCUMENT</div>
+
+      <div class="upload-zone" id="uploadZone">
+        <div class="upload-icon">↑</div>
+        <div class="upload-hint">Drop PDF or DOCX here</div>
+        <div class="upload-sub">or click to browse</div>
+        <input type="file" id="fileInput" accept=".pdf,.docx" hidden />
+      </div>
+
+      <div class="upload-status" id="uploadStatus" style="display:none;">
+        <div class="status-row">
+          <span class="status-dot" id="statusDot"></span>
+          <span class="status-text" id="statusText">Idle</span>
+        </div>
+        <div class="status-filename" id="statusFilename"></div>
+        <div class="status-meta" id="statusMeta"></div>
+      </div>
+
+      <button class="upload-btn" id="uploadBtn" disabled>
+        <span id="uploadBtnText">Select file first</span>
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="model-badge">
+        <span class="model-label">MODEL</span>
+        <span class="model-name">openrouter/free</span>
+      </div>
+      <div class="stack-info">
+        <span>Flask · LangChain · FAISS</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Chat Area -->
+  <main class="chat-area">
+    <div class="chat-header">
+      <div class="chat-title">Ask your document</div>
+      <div class="doc-indicator" id="docIndicator">
+        <span class="doc-dot inactive"></span>
+        <span id="docName">No document loaded</span>
+      </div>
+    </div>
+
+    <div class="messages" id="messages">
+      <div class="welcome-state" id="welcomeState">
+        <div class="welcome-icon">⬡</div>
+        <h2>Upload a document to begin</h2>
+        <p>Ask anything about your PDF or DOCX file.<br/>I'll answer strictly from its contents.</p>
+        <div class="feature-chips">
+          <span class="chip">Company Profiles</span>
+          <span class="chip">Reports</span>
+          <span class="chip">Contracts</span>
+          <span class="chip">Manuals</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <div class="input-wrapper">
+        <textarea
+          id="messageInput"
+          placeholder="Ask a question about your document..."
+          rows="1"
+          disabled
+        ></textarea>
+        <button class="send-btn" id="sendBtn" disabled>
+          <span class="send-icon">→</span>
+        </button>
+      </div>
+      <div class="input-hint">Answers sourced exclusively from uploaded document</div>
+    </div>
+  </main>
+
+</div>
+
+<script src="/static/script.js"></script>
+</body>
+</html>

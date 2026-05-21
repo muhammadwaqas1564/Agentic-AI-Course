@@ -1,0 +1,602 @@
+{% extends "base.html" %}
+{% block title %}Applications — AI Career Mentor{% endblock %}
+
+{% block extra_head %}
+<style>
+  .page-title        { font-family:'Syne',sans-serif; font-size:1.75rem; font-weight:800; margin:0 0 .25rem; }
+  .page-sub          { font-size:.85rem; opacity:.55; margin:0 0 2rem; }
+
+  .stat-strip        { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1rem; margin-bottom:2rem; }
+  .stat-card         { background:var(--card-bg); border:1px solid var(--border); border-radius:14px;
+                       padding:1.2rem 1.4rem; display:flex; align-items:center; gap:1rem; }
+  .stat-icon         { font-size:1.4rem; width:44px; height:44px; border-radius:10px;
+                       display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .stat-icon.blue    { background:rgba(99,102,241,.15); }
+  .stat-icon.green   { background:rgba(16,185,129,.15); }
+  .stat-icon.amber   { background:rgba(245,158,11,.15); }
+  .stat-icon.cyan    { background:rgba(6,182,212,.15); }
+  .stat-val          { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; line-height:1; }
+  .stat-lbl          { font-size:.72rem; opacity:.5; margin-top:.2rem; letter-spacing:.04em; text-transform:uppercase; }
+
+  .tab-bar           { display:flex; gap:.5rem; border-bottom:1px solid var(--border); margin-bottom:1.8rem; }
+  .tab-btn           { font-family:'Syne',sans-serif; font-size:.82rem; font-weight:600;
+                       padding:.55rem 1.1rem; border:none; background:none; color:inherit;
+                       opacity:.45; cursor:pointer; border-bottom:2px solid transparent;
+                       transition:opacity .2s,border-color .2s; white-space:nowrap; }
+  .tab-btn.active    { opacity:1; border-bottom-color:var(--accent); }
+  .tab-pane          { display:none; }
+  .tab-pane.active   { display:block; }
+
+  .card              { background:var(--card-bg); border:1px solid var(--border);
+                       border-radius:16px; padding:1.5rem; margin-bottom:1rem; }
+  .card-header-row   { display:flex; align-items:flex-start; gap:1rem; }
+  .company-avatar    { width:48px; height:48px; border-radius:12px; background:rgba(99,102,241,.15);
+                       display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; }
+  .job-title-h       { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; margin:0 0 .15rem; }
+  .job-meta          { font-size:.78rem; opacity:.5; display:flex; gap:.8rem; flex-wrap:wrap; }
+
+  .match-row         { display:flex; align-items:center; gap:.7rem; margin-top:.9rem; }
+  .match-bar-wrap    { flex:1; height:5px; background:var(--border); border-radius:99px; overflow:hidden; }
+  .match-bar-fill    { height:100%; border-radius:99px; }
+  .fill-high         { background:linear-gradient(90deg,#10b981,#34d399); }
+  .fill-mid          { background:linear-gradient(90deg,#f59e0b,#fcd34d); }
+  .fill-low          { background:linear-gradient(90deg,#ef4444,#f87171); }
+  .match-pct         { font-family:'JetBrains Mono',monospace; font-size:.78rem; min-width:36px; text-align:right; }
+
+  .status-pill       { display:inline-flex; align-items:center; gap:.35rem; padding:.28rem .8rem;
+                       border-radius:99px; font-size:.72rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase; }
+  .pill-applied      { background:rgba(16,185,129,.15); color:#10b981; }
+  .pill-simulated    { background:rgba(99,102,241,.15); color:#818cf8; }
+  .pill-pending      { background:rgba(245,158,11,.15); color:#f59e0b; }
+  .pill-default      { background:rgba(107,114,128,.15); color:#9ca3af; }
+
+  .card-actions      { display:flex; gap:.6rem; margin-top:1rem; flex-wrap:wrap; }
+  .btn-xs            { font-size:.75rem; padding:.32rem .8rem; border-radius:8px;
+                       border:1px solid var(--border); background:transparent; color:inherit;
+                       cursor:pointer; font-family:'Syne',sans-serif; font-weight:600; }
+  .btn-xs:hover      { background:var(--border); }
+  .btn-xs.accent     { border-color:var(--accent); color:var(--accent); }
+  .btn-xs.accent:hover { background:rgba(99,102,241,.12); }
+
+  .email-box         { margin-top:.9rem; background:rgba(0,0,0,.25); border:1px solid var(--border);
+                       border-radius:10px; padding:1rem; font-family:'JetBrains Mono',monospace;
+                       font-size:.75rem; line-height:1.7; white-space:pre-wrap;
+                       max-height:180px; overflow-y:auto; display:none; }
+  .email-box.open    { display:block; }
+
+  .cl-grid           { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:1rem; }
+  .cl-card           { background:var(--card-bg); border:1px solid var(--border);
+                       border-radius:16px; padding:1.4rem; display:flex; flex-direction:column; gap:.9rem; }
+  .cl-card-head      { display:flex; align-items:center; gap:.75rem; }
+  .cl-icon           { width:40px; height:40px; border-radius:10px; background:rgba(16,185,129,.12);
+                       display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .cl-title-h        { font-family:'Syne',sans-serif; font-weight:700; font-size:.9rem; }
+  .cl-date           { font-size:.72rem; opacity:.45; }
+  .cl-preview        { font-size:.8rem; line-height:1.65; opacity:.65; overflow:hidden;
+                       display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; }
+
+  .cl-modal-overlay  { position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px);
+                       z-index:1000; display:none; align-items:center; justify-content:center; padding:1rem; }
+  .cl-modal-overlay.open { display:flex; }
+  .cl-modal          { background:var(--card-bg); border:1px solid var(--border); border-radius:20px;
+                       width:100%; max-width:680px; max-height:82vh; display:flex; flex-direction:column; overflow:hidden; }
+  .cl-modal-head     { padding:1.2rem 1.5rem; border-bottom:1px solid var(--border);
+                       display:flex; align-items:center; justify-content:space-between; }
+  .cl-modal-head h3  { font-family:'Syne',sans-serif; font-weight:700; margin:0; font-size:1rem; }
+  .cl-modal-body     { padding:1.5rem; overflow-y:auto; flex:1; font-size:.85rem; line-height:1.85; white-space:pre-wrap; }
+  .cl-modal-foot     { padding:1rem 1.5rem; border-top:1px solid var(--border); display:flex; gap:.6rem; justify-content:flex-end; }
+  .close-btn         { background:none; border:none; font-size:1.3rem; cursor:pointer; opacity:.5; color:inherit; }
+  .close-btn:hover   { opacity:1; }
+
+  /* ── Profile tab ─────────────────────────────── */
+  .profile-grid      { display:grid; grid-template-columns:260px 1fr; gap:1.2rem; }
+  @media(max-width:720px){ .profile-grid { grid-template-columns:1fr; } }
+
+  .profile-id-card   { background:var(--card-bg); border:1px solid var(--border);
+                       border-radius:16px; padding:1.8rem; text-align:center; }
+  .avatar-ring       { width:76px; height:76px; border-radius:50%;
+                       background:linear-gradient(135deg,var(--accent),#8b5cf6);
+                       display:inline-flex; align-items:center; justify-content:center;
+                       font-size:2rem; margin-bottom:1rem; }
+  .profile-name      { font-family:'Syne',sans-serif; font-weight:800; font-size:1.05rem; margin:0 0 .3rem; }
+  .profile-meta-item { font-size:.78rem; opacity:.5; margin:.2rem 0;
+                       display:flex; align-items:center; justify-content:center; gap:.4rem; }
+  .p-divider         { border:none; border-top:1px solid var(--border); margin:1rem 0; }
+
+  .profile-detail-card { background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:1.5rem; }
+  .section-label     { font-family:'Syne',sans-serif; font-size:.7rem; font-weight:700;
+                       letter-spacing:.1em; text-transform:uppercase; opacity:.4; margin:0 0 .75rem; display:block; }
+
+  /* Skills */
+  .skill-cloud       { display:flex; flex-wrap:wrap; gap:.45rem; margin-bottom:1.6rem; }
+  .skill-pill        { font-family:'JetBrains Mono',monospace; font-size:.72rem; font-weight:500;
+                       padding:.28rem .75rem; border-radius:7px;
+                       background:rgba(99,102,241,.1); border:1px solid rgba(99,102,241,.3);
+                       color:var(--accent); }
+
+  /* Edu / Exp blocks */
+  .edu-block         { border:1px solid var(--border); border-left:3px solid var(--accent);
+                       border-radius:12px; padding:.9rem 1.1rem; margin-bottom:.75rem; }
+  .exp-block         { border:1px solid var(--border); border-left:3px solid #10b981;
+                       border-radius:12px; padding:.9rem 1.1rem; margin-bottom:.75rem; }
+  .block-title       { font-family:'Syne',sans-serif; font-weight:700; font-size:.88rem; margin:0 0 .25rem; }
+  .block-sub         { font-size:.76rem; opacity:.5; margin:.1rem 0; }
+  .block-bullets     { margin:.5rem 0 0; padding-left:1.1rem; font-size:.8rem; line-height:1.75; opacity:.8; }
+  .block-bullets li  { margin-bottom:.2rem; }
+
+  /* Empty */
+  .empty-state       { text-align:center; padding:4rem 2rem; }
+  .empty-icon        { font-size:3rem; opacity:.2; margin-bottom:1rem; }
+  .empty-title       { font-family:'Syne',sans-serif; font-weight:700; font-size:1.1rem; margin:0 0 .5rem; }
+  .empty-sub         { font-size:.83rem; opacity:.5; margin:0 0 1.5rem; line-height:1.6; }
+  .btn-accent        { display:inline-flex; align-items:center; gap:.4rem; padding:.6rem 1.4rem;
+                       border-radius:10px; font-family:'Syne',sans-serif; font-size:.82rem; font-weight:700;
+                       border:none; cursor:pointer; background:var(--accent); color:#fff;
+                       text-decoration:none; transition:opacity .2s; }
+  .btn-accent:hover  { opacity:.85; }
+
+  .copy-toast        { position:fixed; bottom:1.5rem; right:1.5rem; z-index:2000;
+                       background:var(--card-bg); border:1px solid var(--border); border-radius:10px;
+                       padding:.6rem 1.2rem; font-size:.8rem; transform:translateY(10px);
+                       opacity:0; transition:all .25s; pointer-events:none; }
+  .copy-toast.show   { opacity:1; transform:translateY(0); }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(14px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<h1 class="page-title">Applications</h1>
+<p class="page-sub">Track applied jobs, cover letters &amp; your extracted CV profile</p>
+
+<!-- ── Stat strip ───────────────────────────────────────────────── -->
+<div class="stat-strip">
+  <div class="stat-card">
+    <div class="stat-icon blue">◳</div>
+    <div>
+      <div class="stat-val">{{ applications|length if applications else 0 }}</div>
+      <div class="stat-lbl">Applied Jobs</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon green">⬖</div>
+    <div>
+      <div class="stat-val">{{ cover_letters|length if cover_letters else 0 }}</div>
+      <div class="stat-lbl">Cover Letters</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon amber">◉</div>
+    <div>
+      <div class="stat-val" id="pendingCount">0</div>
+      <div class="stat-lbl">Pending</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon cyan">◈</div>
+    <div>
+      <div class="stat-val" id="skillCount">0</div>
+      <div class="stat-lbl">Skills Found</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Tab bar ─────────────────────────────────────────────────── -->
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="applied">◳ Applied Jobs</button>
+  <button class="tab-btn"        data-tab="letters">⬖ Cover Letters</button>
+  <button class="tab-btn"        data-tab="profile">◈ CV Profile</button>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     TAB 1 — APPLIED JOBS
+══════════════════════════════════════════════════ -->
+<div class="tab-pane active" id="tab-applied">
+  {% if applications and applications|length > 0 %}
+    {% for app in applications %}
+    <div class="card" style="animation:fadeUp .35s ease both;animation-delay:{{ loop.index0*60 }}ms">
+      <div class="card-header-row">
+        <div class="company-avatar">◫</div>
+        <div style="flex:1;min-width:0;">
+          <div class="job-title-h">{{ app.job_title if app.job_title else 'Job Application' }}</div>
+          <div class="job-meta">
+            <span>🏢 {{ app.company if app.company else 'Company' }}</span>
+            {% if app.applied_at %}<span>📅 {{ app.applied_at }}</span>{% endif %}
+          </div>
+        </div>
+        <div>
+          {% set s = (app.status if app.status else 'applied')|lower %}
+          <span class="status-pill {% if s=='applied' %}pill-applied{% elif s=='simulated' %}pill-simulated{% elif s=='pending' %}pill-pending{% else %}pill-default{% endif %}">
+            {% if s in ['applied','simulated'] %}✓{% elif s=='pending' %}⏳{% else %}·{% endif %}
+            {{ s|capitalize }}
+          </span>
+        </div>
+      </div>
+      {% if app.match_score %}
+      <div class="match-row">
+        <span style="font-size:.72rem;opacity:.5;">Match</span>
+        <div class="match-bar-wrap">
+          <div class="match-bar-fill {% if app.match_score>=75 %}fill-high{% elif app.match_score>=50 %}fill-mid{% else %}fill-low{% endif %}"
+               style="width:{{ app.match_score }}%"></div>
+        </div>
+        <span class="match-pct" style="color:{% if app.match_score>=75 %}#10b981{% elif app.match_score>=50 %}#f59e0b{% else %}#ef4444{% endif %}">
+          {{ app.match_score }}%
+        </span>
+      </div>
+      {% endif %}
+      <div class="card-actions">
+        {% if app.job_url %}<a href="{{ app.job_url }}" target="_blank" class="btn-xs accent">↗ View Job</a>{% endif %}
+        {% if app.email_content %}<button class="btn-xs" onclick="toggleEmail(this)">✉ Application Email</button>{% endif %}
+      </div>
+      {% if app.email_content %}<div class="email-box">{{ app.email_content }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  {% else %}
+  <div class="card">
+    <div class="empty-state">
+      <div class="empty-icon">◳</div>
+      <div class="empty-title">No Applications Yet</div>
+      <p class="empty-sub">Go to Job Matches and hit <strong>Auto Apply</strong><br>to start tracking applications here.</p>
+      <a href="{{ url_for('jobs') }}" class="btn-accent">◫ Browse Job Matches</a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     TAB 2 — COVER LETTERS
+══════════════════════════════════════════════════ -->
+<div class="tab-pane" id="tab-letters">
+  {% if cover_letters and cover_letters|length > 0 %}
+  <div class="cl-grid">
+    {% for letter in cover_letters %}
+    <div class="cl-card">
+      <div class="cl-card-head">
+        <div class="cl-icon">⬖</div>
+        <div>
+          <div class="cl-title-h">{{ letter.job_title if letter.job_title else 'Cover Letter' }}</div>
+          <div class="cl-date">{{ letter.created_at if letter.created_at else 'Recently generated' }}</div>
+        </div>
+      </div>
+      <div class="cl-preview">{{ letter.content[:350] if letter.content else 'No content.' }}…</div>
+      <button class="btn-xs accent" style="align-self:flex-start" onclick="openLetter({{ loop.index }})">↗ Read Full Letter</button>
+    </div>
+    <div class="cl-modal-overlay" id="modal-{{ loop.index }}">
+      <div class="cl-modal">
+        <div class="cl-modal-head">
+          <h3>⬖ {{ letter.job_title if letter.job_title else 'Cover Letter' }}</h3>
+          <button class="close-btn" onclick="closeLetter({{ loop.index }})">✕</button>
+        </div>
+        <div class="cl-modal-body" id="modal-body-{{ loop.index }}">{{ letter.content if letter.content else 'Content not available.' }}</div>
+        <div class="cl-modal-foot">
+          <button class="btn-xs" onclick="copyLetter({{ loop.index }})">⎘ Copy</button>
+          <button class="btn-xs" onclick="closeLetter({{ loop.index }})">Close</button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card">
+    <div class="empty-state">
+      <div class="empty-icon">⬖</div>
+      <div class="empty-title">No Cover Letters Yet</div>
+      <p class="empty-sub">Cover letters are auto-generated when you apply to jobs.<br>Head to Job Matches and click <strong>Generate Cover Letter</strong>.</p>
+      <a href="{{ url_for('jobs') }}" class="btn-accent">◫ Go to Job Matches</a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     TAB 3 — CV PROFILE
+     All parsing done in JavaScript because the
+     profile fields arrive as JSON strings from
+     the Flask/SQLite layer.
+══════════════════════════════════════════════════ -->
+<div class="tab-pane" id="tab-profile">
+  {% if profile %}
+  <div class="profile-grid">
+
+    <!-- Identity card -->
+    <div class="profile-id-card">
+      <div class="avatar-ring">◈</div>
+      <div class="profile-name">{{ profile.name if profile.name else 'Your Profile' }}</div>
+      {% if profile.email    %}<div class="profile-meta-item">✉ {{ profile.email }}</div>{% endif %}
+      {% if profile.phone    %}<div class="profile-meta-item">📞 {{ profile.phone }}</div>{% endif %}
+      {% if profile.location %}<div class="profile-meta-item">📍 {{ profile.location }}</div>{% endif %}
+      <hr class="p-divider">
+      <a href="{{ url_for('upload') }}" class="btn-accent" style="font-size:.75rem;padding:.45rem 1rem;">↑ Update CV</a>
+    </div>
+
+    <!-- Detail card — rendered by JS below -->
+    <div class="profile-detail-card">
+
+      <!-- SKILLS -->
+      <span class="section-label">⚡ Extracted Skills</span>
+      <div class="skill-cloud" id="skillCloud">
+        <span style="font-size:.8rem;opacity:.3;">Loading…</span>
+      </div>
+
+      <!-- EDUCATION -->
+      <span class="section-label">🎓 Education</span>
+      <div id="eduContainer">
+        <span style="font-size:.8rem;opacity:.3;">Loading…</span>
+      </div>
+
+      <!-- EXPERIENCE -->
+      <span class="section-label" style="margin-top:1.4rem;display:block;">💼 Experience</span>
+      <div id="expContainer">
+        <span style="font-size:.8rem;opacity:.3;">Loading…</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Pass raw profile data to JS safely via json_script -->
+  <!-- {{ profile.skills     | tojson | safe | replace('<','\\u003c') }}
+  {{ profile.education  | tojson | safe | replace('<','\\u003c') }}
+  {{ profile.experience | tojson | safe | replace('<','\\u003c') }} -->
+
+  {# Use script tags with IDs so JS can read them without eval() risk #}
+  <script id="rawSkills"    type="application/json">{{ profile.skills     | tojson }}</script>
+  <script id="rawEducation" type="application/json">{{ profile.education  | tojson }}</script>
+  <script id="rawExperience"type="application/json">{{ profile.experience | tojson }}</script>
+
+  {% else %}
+  <div class="card">
+    <div class="empty-state">
+      <div class="empty-icon">◈</div>
+      <div class="empty-title">No CV Profile Found</div>
+      <p class="empty-sub">Upload your CV first so the agent can extract your profile.</p>
+      <a href="{{ url_for('upload') }}" class="btn-accent">↑ Upload CV</a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<div class="copy-toast" id="copyToast">⎘ Copied to clipboard</div>
+{% endblock %}
+
+
+{% block extra_scripts %}
+<script>
+/* ═══════════════════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════════════════ */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ═══════════════════════════════════════════════════════════
+   PROFILE DATA PARSER
+   Handles three input shapes coming from Flask/SQLite:
+   1. Already a JS array/object  (profile field was a Python list)
+   2. A JSON string              (profile field stored as TEXT in SQLite)
+   3. A double-encoded string    (serialised twice by accident)
+═══════════════════════════════════════════════════════════ */
+function safeParse(raw) {
+  if (raw === null || raw === undefined) return [];
+  if (Array.isArray(raw) || (typeof raw === 'object')) return raw;
+  try {
+    let parsed = JSON.parse(raw);
+    // If it's still a string after one parse, parse again
+    if (typeof parsed === 'string') parsed = JSON.parse(parsed);
+    return parsed;
+  } catch(e) {
+    // Last resort: return as single-element array so something shows
+    return [raw];
+  }
+}
+
+function readJSON(id) {
+  const el = document.getElementById(id);
+  if (!el) return [];
+  return safeParse(el.textContent.trim());
+}
+
+/* ─── SKILLS ──────────────────────────────────────────────── */
+function renderSkills() {
+  const cloud = document.getElementById('skillCloud');
+  if (!cloud) return;
+  const raw    = readJSON('rawSkills');
+  const skills = Array.isArray(raw) ? raw : [];
+
+  if (!skills.length) {
+    cloud.innerHTML = '<span style="font-size:.8rem;opacity:.4;">No skills extracted yet.</span>';
+    return;
+  }
+
+  document.getElementById('skillCount').textContent = skills.length;
+
+  cloud.innerHTML = skills.map(s => {
+    // Each item is either a plain string or {"text":"...","years":[]}
+    const label = (typeof s === 'object' && s !== null && s.text) ? s.text : String(s);
+    return label.trim()
+      ? `<span class="skill-pill">${escH(label.trim())}</span>`
+      : '';
+  }).join('');
+}
+
+/* ─── EDUCATION ───────────────────────────────────────────── */
+function renderEducation() {
+  const container = document.getElementById('eduContainer');
+  if (!container) return;
+  const raw   = readJSON('rawEducation');
+  const items = Array.isArray(raw) ? raw : [];
+
+  if (!items.length) {
+    container.innerHTML = '<p style="font-size:.8rem;opacity:.4;">No education data found.</p>';
+    return;
+  }
+
+  // Flatten to array of plain text strings
+  const lines = items.map(i =>
+    (typeof i === 'object' && i !== null && i.text) ? i.text.trim() : String(i).trim()
+  ).filter(Boolean);
+
+  // Group lines into degree blocks
+  const degreeKws = ['BS','MS','BE','BCS','MCS','PhD','Bachelor','Master',
+                     'MBA','Doctor','BSCS','MSCS','BBA','BSc','MSc','CGPA'];
+
+  const blocks = [];
+  let current  = null;
+
+  lines.forEach(line => {
+    const isNewBlock = degreeKws.some(kw => line.startsWith(kw));
+    if (isNewBlock) {
+      if (current) blocks.push(current);
+      current = { title: line, subs: [] };
+    } else {
+      if (!current) current = { title: line, subs: [] }; // orphan line
+      else current.subs.push(line);
+    }
+  });
+  if (current) blocks.push(current);
+
+  container.innerHTML = blocks.map(b => `
+    <div class="edu-block">
+      <div class="block-title">${escH(b.title)}</div>
+      ${b.subs.map(s => `<div class="block-sub">${escH(s)}</div>`).join('')}
+    </div>
+  `).join('');
+}
+
+/* ─── EXPERIENCE ──────────────────────────────────────────── */
+function renderExperience() {
+  const container = document.getElementById('expContainer');
+  if (!container) return;
+  const raw   = readJSON('rawExperience');
+  const items = Array.isArray(raw) ? raw : [];
+
+  if (!items.length) {
+    container.innerHTML = '<p style="font-size:.8rem;opacity:.4;">No experience data found.</p>';
+    return;
+  }
+
+  const lines = items.map(i =>
+    (typeof i === 'object' && i !== null && i.text) ? i.text.trim() : String(i).trim()
+  ).filter(Boolean);
+
+  const roleKws = ['Engineer','Developer','Analyst','Manager','Intern','Scientist',
+                   'Lead','Head','Consultant','Designer','Architect','Director',
+                   'Officer','Specialist','Researcher','Trainer','Mentor'];
+
+  const isDateLine = t =>
+    (t.includes('–') || t.includes(' - ')) &&
+    (t.includes('Present') || /20\d\d/.test(t) || /19\d\d/.test(t)) &&
+    t.length < 65;
+
+  const isRoleLine = t =>
+    roleKws.some(kw => t.includes(kw)) && !t.startsWith('•') && !isDateLine(t);
+
+  const blocks  = [];
+  let current   = null;
+
+  lines.forEach(line => {
+    if (isRoleLine(line)) {
+      if (current) blocks.push(current);
+      current = { role: line, date: '', bullets: [] };
+    } else if (isDateLine(line)) {
+      if (!current) current = { role: '', date: line, bullets: [] };
+      else current.date = line;
+    } else {
+      if (!current) current = { role: line, date: '', bullets: [] };
+      // Split on bullet characters
+      if (line.includes('•')) {
+        line.split('•').map(c => c.trim()).filter(Boolean)
+            .forEach(chunk => current.bullets.push(chunk));
+      } else {
+        current.bullets.push(line.replace(/^[•\-]\s*/, ''));
+      }
+    }
+  });
+  if (current) blocks.push(current);
+
+  container.innerHTML = blocks.map(b => `
+    <div class="exp-block">
+      ${b.role ? `<div class="block-title">${escH(b.role)}</div>` : ''}
+      ${b.date ? `<div class="block-sub">📅 ${escH(b.date)}</div>` : ''}
+      ${b.bullets.length ? `
+        <ul class="block-bullets">
+          ${b.bullets.map(bl => `<li>${escH(bl)}</li>`).join('')}
+        </ul>` : ''}
+    </div>
+  `).join('');
+}
+
+/* ─── XSS helper ──────────────────────────────────────────── */
+function escH(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ─── Boot ─────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  renderSkills();
+  renderEducation();
+  renderExperience();
+});
+
+
+/* ═══════════════════════════════════════════════════════════
+   EMAIL TOGGLE
+═══════════════════════════════════════════════════════════ */
+function toggleEmail(btn) {
+  const box  = btn.closest('.card').querySelector('.email-box');
+  if (!box) return;
+  const open = box.classList.toggle('open');
+  btn.textContent = open ? '✕ Hide Email' : '✉ Application Email';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COVER LETTER MODALS
+═══════════════════════════════════════════════════════════ */
+function openLetter(id) {
+  document.getElementById('modal-' + id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLetter(id) {
+  document.getElementById('modal-' + id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.querySelectorAll('.cl-modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) { overlay.classList.remove('open'); document.body.style.overflow = ''; }
+  });
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape')
+    document.querySelectorAll('.cl-modal-overlay.open').forEach(m => {
+      m.classList.remove('open'); document.body.style.overflow = '';
+    });
+});
+
+/* ═══════════════════════════════════════════════════════════
+   COPY LETTER
+═══════════════════════════════════════════════════════════ */
+function copyLetter(id) {
+  navigator.clipboard.writeText(
+    document.getElementById('modal-body-' + id).innerText
+  ).then(showToast);
+}
+function showToast() {
+  const t = document.getElementById('copyToast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+</script>
+{% endblock %}

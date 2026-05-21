@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}AI Career Mentor{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- ── Sidebar ─────────────────────────────────────────────────── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text">CareerMind<span class="logo-ai">AI</span></span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('index') }}" class="nav-item {% if request.endpoint == 'index' %}active{% endif %}">
+        <span class="nav-icon">◈</span><span>Home</span>
+      </a>
+      <a href="{{ url_for('upload') }}" class="nav-item {% if request.endpoint == 'upload' %}active{% endif %}">
+        <span class="nav-icon">↑</span><span>Upload CV</span>
+      </a>
+      <a href="{{ url_for('dashboard') }}" class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
+        <span class="nav-icon">◉</span><span>Dashboard</span>
+      </a>
+      <a href="{{ url_for('jobs') }}" class="nav-item {% if request.endpoint == 'jobs' %}active{% endif %}">
+        <span class="nav-icon">◫</span><span>Job Matches</span>
+      </a>
+      <a href="{{ url_for('roadmap') }}" class="nav-item {% if request.endpoint == 'roadmap' %}active{% endif %}">
+        <span class="nav-icon">⬖</span><span>Roadmap</span>
+      </a>
+      <a href="{{ url_for('applications') }}" class="nav-item {% if request.endpoint == 'applications' %}active{% endif %}">
+        <span class="nav-icon">◳</span><span>Applications</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <span id="themeIcon">☀</span>
+      </button>
+      <button class="btn-ghost-sm" onclick="clearSession()">New Session</button>
+    </div>
+  </aside>
+
+  <!-- ── Mobile header ──────────────────────────────────────────── -->
+  <header class="mobile-header">
+    <button class="hamburger" id="menuToggle">☰</button>
+    <span class="logo-text">CareerMind<span class="logo-ai">AI</span></span>
+    <button class="theme-toggle-sm" id="themeToggleMobile">☀</button>
+  </header>
+
+  <!-- ── Main content ───────────────────────────────────────────── -->
+  <main class="main-content" id="mainContent">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ── Global loading overlay ─────────────────────────────────── -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-card">
+      <div class="agent-spinner"></div>
+      <p class="loading-title" id="loadingTitle">Agent Running</p>
+      <p class="loading-sub" id="loadingSub">Analysing your profile…</p>
+      <div class="agent-steps" id="agentSteps">
+        <div class="agent-step" id="step-observe">◈ Observing CV input</div>
+        <div class="agent-step" id="step-parse">⬖ Parsing skills & experience</div>
+        <div class="agent-step" id="step-analyse">◉ Running career analysis</div>
+        <div class="agent-step" id="step-search">◫ Searching job market</div>
+        <div class="agent-step" id="step-match">⬡ Matching opportunities</div>
+        <div class="agent-step" id="step-decide">→ Generating recommendations</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

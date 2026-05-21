@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% block title %}Upload CV — CareerMindAI{% endblock %}
+
+{% block content %}
+<div class="page-header fade-in">
+  <h1 class="page-title">Upload Your CV</h1>
+  <p class="page-sub">The agent will parse your CV, extract skills, and run a full career analysis.</p>
+</div>
+
+<div class="upload-layout">
+  <!-- ── Left: Upload form ── -->
+  <div class="upload-col fade-in fade-in-1">
+    <form id="uploadForm" enctype="multipart/form-data">
+      <!-- Drop zone -->
+      <div class="upload-zone" id="dropZone">
+        <span class="upload-icon">⬡</span>
+        <p class="upload-title">Drop your CV here</p>
+        <p class="upload-sub">PDF or TXT — max 5MB</p>
+        <input type="file" id="cvFile" name="cv_file" accept=".pdf,.txt" style="display:none" />
+        <button type="button" class="btn btn-secondary mt-4" onclick="document.getElementById('cvFile').click()">
+          Browse Files
+        </button>
+        <div id="fileChosen" class="file-chosen" style="display:none"></div>
+      </div>
+
+      <div class="divider-text">or paste your CV text</div>
+
+      <!-- Text paste fallback -->
+      <div class="form-group">
+        <label for="cvText">Paste CV / Resume Text</label>
+        <textarea id="cvText" name="cv_text" rows="8" placeholder="Paste the full text of your CV here…"></textarea>
+      </div>
+
+      <!-- Location -->
+      <div class="form-group">
+        <label for="location">Job Search Location</label>
+        <input type="text" id="location" name="location" value="London" placeholder="e.g. London, New York, Remote" />
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg w-full" id="submitBtn">
+        ⬡ Analyse CV &amp; Find Jobs
+      </button>
+    </form>
+  </div>
+
+  <!-- ── Right: What happens ── -->
+  <div class="upload-info fade-in fade-in-2">
+    <div class="card">
+      <div class="card-title">What the Agent Does</div>
+      <div class="agent-pipeline">
+        {% for icon, step, desc in [
+          ('◈', 'Observe', 'Reads your CV file or text input'),
+          ('⬖', 'Parse Skills', 'Extracts 50+ technical and soft skills using NLP'),
+          ('◉', 'Analyse Career', 'LLM evaluates your readiness for different careers'),
+          ('◫', 'Search Jobs', 'Scans Adzuna for live job listings'),
+          ('⬡', 'Match & Rank', 'Scores each job against your skill profile'),
+          ('→', 'Recommend', 'Generates actionable next steps'),
+        ] %}
+        <div class="pipeline-step">
+          <div class="pipeline-icon">{{ icon }}</div>
+          <div class="pipeline-content">
+            <div class="pipeline-name">{{ step }}</div>
+            <div class="pipeline-desc">{{ desc }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <div class="card-title">Tips for Best Results</div>
+      <ul class="tips-list">
+        <li>Include your full work history and education</li>
+        <li>List specific tools and technologies (Python, AWS, etc.)</li>
+        <li>Mention projects with measurable outcomes</li>
+        <li>Set your location for local job matching</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Result preview (hidden until upload) -->
+<div id="uploadResult" style="display:none;" class="mt-8 fade-in">
+  <div class="result-header">
+    <h2 class="result-title">✓ Analysis Complete</h2>
+    <a href="/dashboard" class="btn btn-primary">View Full Dashboard →</a>
+  </div>
+  <div class="grid-3 mt-4" id="quickStats"></div>
+</div>
+
+<style>
+.upload-layout { display: grid; grid-template-columns: 1fr 380px; gap: 28px; }
+.upload-col, .upload-info { display: flex; flex-direction: column; }
+.divider-text { text-align: center; color: var(--text-dim); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; margin: 20px 0; position: relative; }
+.divider-text::before, .divider-text::after { content: ''; position: absolute; top: 50%; width: 42%; height: 1px; background: var(--border); }
+.divider-text::before { left: 0; }
+.divider-text::after { right: 0; }
+
+.file-chosen { margin-top: 12px; font-family: var(--font-mono); font-size: 13px; color: var(--accent-2); }
+
+.agent-pipeline { display: flex; flex-direction: column; gap: 14px; }
+.pipeline-step { display: flex; align-items: flex-start; gap: 14px; }
+.pipeline-icon { width: 32px; height: 32px; border-radius: 50%; background: color-mix(in srgb, var(--accent) 12%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--accent); flex-shrink: 0; }
+.pipeline-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.pipeline-desc { font-size: 12px; color: var(--text-muted); }
+
+.tips-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.tips-list li { font-size: 13px; color: var(--text-muted); padding-left: 20px; position: relative; }
+.tips-list li::before { content: '→'; position: absolute; left: 0; color: var(--accent-2); }
+
+.result-header { display: flex; justify-content: space-between; align-items: center; }
+.result-title { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--success); }
+
+@media (max-width: 900px) { .upload-layout { grid-template-columns: 1fr; } .upload-info { order: -1; } }
+</style>
+
+<script>
+const dropZone = document.getElementById('dropZone');
+const cvFile = document.getElementById('cvFile');
+const form = document.getElementById('uploadForm');
+
+// Drag & drop
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) { cvFile.files = e.dataTransfer.files; showFileName(file.name); }
+});
+
+cvFile.addEventListener('change', () => {
+  if (cvFile.files[0]) showFileName(cvFile.files[0].name);
+});
+
+function showFileName(name) {
+  const el = document.getElementById('fileChosen');
+  el.textContent = `📄 ${name}`;
+  el.style.display = 'block';
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+
+  const cvText = document.getElementById('cvText').value.trim();
+  const hasFile = cvFile.files.length > 0;
+
+  if (!hasFile && cvText.length < 50) {
+    alert('Please upload a CV file or paste at least 50 characters of CV text.');
+    return;
+  }
+
+  showLoading('Agent Running', 'Analysing your profile…');
+  btn.disabled = true;
+
+  const formData = new FormData(form);
+
+  try {
+    const resp = await fetch('/api/upload-cv', { method: 'POST', body: formData });
+    const data = await resp.json();
+    hideLoading();
+
+    if (data.success) {
+      showUploadResult(data);
+    } else {
+      alert(data.error || 'Upload failed.');
+      btn.disabled = false;
+    }
+  } catch (err) {
+    hideLoading();
+    alert('Network error. Please try again.');
+    btn.disabled = false;
+  }
+});
+
+function showUploadResult(data) {
+  const resultEl = document.getElementById('uploadResult');
+  const statsEl = document.getElementById('quickStats');
+
+  statsEl.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Skills Found</div>
+      <div class="stat-value">${data.skills.length}</div>
+      <span class="stat-badge badge-blue">extracted</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Career Paths</div>
+      <div class="stat-value">${data.career_paths.length}</div>
+      <span class="stat-badge badge-cyan">suggested</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Jobs Matched</div>
+      <div class="stat-value">${data.job_count}</div>
+      <span class="stat-badge badge-green">found</span>
+    </div>
+  `;
+
+  resultEl.style.display = 'block';
+  resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+{% endblock %}

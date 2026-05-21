@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MedAI — Diagnostic Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- ─── NAV ─────────────────────────────────── -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <i class="bi bi-activity"></i> MedAI
+    </a>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <span class="nav-badge" id="ollamaStatus">
+        <span class="dot"></span> Checking…
+      </span>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── HERO ─────────────────────────────────── -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <div class="hero-tag">Powered by Mistral 7B · 100% Local · Free</div>
+        <h1 class="hero-title">Clinical AI<br><em>Diagnosis</em><br>Assistant</h1>
+        <p class="hero-sub">Enter patient data and receive instant AI-powered analysis — possible diagnoses, risk stratification, recommended tests, and an explainable summary.</p>
+        <a href="#form-section" class="btn-primary-custom">
+          Start Analysis <i class="bi bi-arrow-down-short"></i>
+        </a>
+      </div>
+      <div class="col-lg-6 d-none d-lg-flex justify-content-center">
+        <div class="hero-graphic">
+          <div class="pulse-ring"></div>
+          <div class="pulse-ring delay1"></div>
+          <div class="pulse-ring delay2"></div>
+          <i class="bi bi-heart-pulse-fill hero-icon"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FEATURES STRIP ─────────────────────────────────── -->
+<section class="features-strip">
+  <div class="container">
+    <div class="row g-3">
+      <div class="col-6 col-md-3">
+        <div class="feature-pill"><i class="bi bi-shield-check"></i> FAISS RAG</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="feature-pill"><i class="bi bi-cpu"></i> CPU Optimized</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="feature-pill"><i class="bi bi-lock-fill"></i> 100% Local</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="feature-pill"><i class="bi bi-database"></i> SQLite Logs</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FORM ─────────────────────────────────── -->
+<section class="form-section" id="form-section">
+  <div class="container">
+    <div class="section-label">Patient Data Entry</div>
+    <h2 class="section-title">Enter Clinical Information</h2>
+
+    {% if errors %}
+    <div class="alert-custom mb-4">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <ul class="mb-0 ps-3">
+        {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <form action="/analyze" method="POST" id="patientForm" novalidate>
+
+      <!-- Row 1 — Demographics -->
+      <div class="form-card">
+        <div class="form-card-header">
+          <i class="bi bi-person-badge"></i> Patient Demographics
+        </div>
+        <div class="row g-4 p-4">
+          <div class="col-md-5">
+            <label class="form-label-custom">Full Name <span class="req">*</span></label>
+            <input type="text" class="input-custom" name="name" placeholder="e.g. Sarah Johnson"
+                   value="{{ form_data.name if form_data else '' }}" required maxlength="100"/>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label-custom">Age <span class="req">*</span></label>
+            <input type="number" class="input-custom" name="age" placeholder="35" min="1" max="129"
+                   value="{{ form_data.age if form_data else '' }}" required/>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label-custom">Gender</label>
+            <select class="input-custom" name="gender">
+              <option value="Not specified" {% if not form_data %}selected{% endif %}>Not specified</option>
+              <option value="Male"   {% if form_data and form_data.gender == 'Male' %}selected{% endif %}>Male</option>
+              <option value="Female" {% if form_data and form_data.gender == 'Female' %}selected{% endif %}>Female</option>
+              <option value="Other"  {% if form_data and form_data.gender == 'Other' %}selected{% endif %}>Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2 — Symptoms & History -->
+      <div class="form-card">
+        <div class="form-card-header">
+          <i class="bi bi-clipboard2-pulse"></i> Clinical Presentation
+        </div>
+        <div class="row g-4 p-4">
+          <div class="col-md-6">
+            <label class="form-label-custom">Symptoms <span class="req">*</span></label>
+            <textarea class="input-custom textarea-md" name="symptoms"
+                      placeholder="e.g. persistent cough for 3 weeks, shortness of breath on exertion, mild fever 37.8°C, fatigue, night sweats..."
+                      required>{{ form_data.symptoms if form_data else '' }}</textarea>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">Medical History</label>
+            <textarea class="input-custom textarea-md" name="history"
+                      placeholder="e.g. Type 2 diabetes (diagnosed 2018), hypertension, appendectomy 2010...">{{ form_data.history if form_data else '' }}</textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3 — Medications & Labs -->
+      <div class="form-card">
+        <div class="form-card-header">
+          <i class="bi bi-capsule"></i> Medications & Investigations
+        </div>
+        <div class="row g-4 p-4">
+          <div class="col-md-4">
+            <label class="form-label-custom">Current Medications</label>
+            <textarea class="input-custom textarea-sm" name="medications"
+                      placeholder="e.g. Metformin 500mg BD, Lisinopril 10mg OD, Aspirin 81mg...">{{ form_data.medications if form_data else '' }}</textarea>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label-custom">Lab Report Results</label>
+            <textarea class="input-custom textarea-sm" name="lab_report"
+                      placeholder="e.g. HbA1c: 8.2%, FBS: 142 mg/dL, Hb: 10.5 g/dL, WBC: 12,000, CRP: 45 mg/L...">{{ form_data.lab_report if form_data else '' }}</textarea>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label-custom">Radiology Notes</label>
+            <textarea class="input-custom textarea-sm" name="radiology"
+                      placeholder="e.g. Chest X-ray: bilateral lower zone opacities, cardiomegaly. ECG: normal sinus rhythm...">{{ form_data.radiology if form_data else '' }}</textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="text-center mt-4">
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <i class="bi bi-robot me-2"></i> Run AI Diagnosis
+        </button>
+        <p class="submit-note">Processing may take 30–90 seconds on CPU.</p>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ─── LOADING OVERLAY ─────────────────────────────────── -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-box">
+    <div class="spinner-wrap">
+      <div class="med-spinner"></div>
+      <i class="bi bi-activity spinner-icon"></i>
+    </div>
+    <h3 class="loading-title">Analysing Patient Data…</h3>
+    <p class="loading-step" id="loadingStep">Initialising AI pipeline</p>
+    <div class="loading-bar-track"><div class="loading-bar-fill" id="loadingBar"></div></div>
+  </div>
+</div>
+
+<!-- ─── FOOTER ─────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-inner">
+      <span class="footer-brand"><i class="bi bi-activity"></i> MedAI</span>
+      <span class="footer-disclaimer">For educational purposes only. Not a substitute for professional medical advice.</span>
+      <span class="footer-stack">Flask · Ollama · FAISS · SentenceTransformers</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ── Ollama status check ──────────────────────
+fetch('/health').then(r=>r.json()).then(data=>{
+  const el = document.getElementById('ollamaStatus');
+  if(data.ollama){
+    el.innerHTML = '<span class="dot dot-green"></span> Ollama Online';
+    el.classList.add('online');
+  } else {
+    el.innerHTML = '<span class="dot dot-red"></span> Ollama Offline';
+    el.classList.add('offline');
+  }
+}).catch(()=>{
+  document.getElementById('ollamaStatus').innerHTML='<span class="dot dot-red"></span> Offline';
+});
+
+// ── Loading animation ────────────────────────
+const steps = [
+  "Preprocessing patient data…",
+  "Generating text embeddings…",
+  "Searching FAISS knowledge base…",
+  "Retrieving relevant medical context…",
+  "Running Mistral 7B inference…",
+  "Parsing structured output…",
+  "Finalising diagnosis report…"
+];
+let stepIdx = 0, progress = 0;
+
+document.getElementById('patientForm').addEventListener('submit', function(e){
+  const name = this.querySelector('[name="name"]').value.trim();
+  const age  = this.querySelector('[name="age"]').value.trim();
+  const symp = this.querySelector('[name="symptoms"]').value.trim();
+  if(!name || !age || !symp){ return; }
+
+  document.getElementById('loadingOverlay').style.display = 'flex';
+
+  const iv = setInterval(()=>{
+    progress = Math.min(progress + (Math.random()*8+2), 92);
+    document.getElementById('loadingBar').style.width = progress + '%';
+    if(stepIdx < steps.length){
+      document.getElementById('loadingStep').textContent = steps[stepIdx++];
+    }
+  }, 1800);
+});
+</script>
+</body>
+</html>

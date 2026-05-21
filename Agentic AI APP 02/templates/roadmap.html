@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Learning Roadmap — CareerMindAI{% endblock %}
+
+{% block content %}
+<div class="flex-between fade-in mb-6">
+  <div>
+    <h1 class="page-title">Learning Roadmap</h1>
+    <p class="page-sub">Your personalised week-by-week plan to career readiness.</p>
+  </div>
+</div>
+
+<!-- Generate new roadmap -->
+{% if profile %}
+<div class="card fade-in mb-8">
+  <div class="card-title">Generate a Roadmap</div>
+  <div class="gen-row">
+    <select id="targetCareer" class="career-select">
+      {% for path in profile.get_career_paths() %}
+      <option value="{{ path.title }}">{{ path.title }}</option>
+      {% endfor %}
+      <option value="Software Developer">Software Developer</option>
+      <option value="Data Analyst">Data Analyst</option>
+      <option value="Machine Learning Engineer">Machine Learning Engineer</option>
+      <option value="DevOps Engineer">DevOps Engineer</option>
+      <option value="Product Manager">Product Manager</option>
+    </select>
+    <button class="btn btn-primary" onclick="triggerRoadmap()">
+      ⬖ Generate Roadmap
+    </button>
+  </div>
+</div>
+{% endif %}
+
+{% if roadmaps %}
+  {% for rm in roadmaps %}
+  {% set rd = rm.get_content() %}
+  <div class="roadmap-container fade-in" style="margin-bottom: 48px;">
+    <div class="roadmap-header">
+      <div>
+        <h2 class="roadmap-title">{{ rd.get('target', rm.target_career) }}</h2>
+        <div class="roadmap-meta">
+          <span class="font-mono text-sm text-accent">{{ rd.get('duration_weeks', 12) }} weeks</span>
+          <span class="text-muted text-sm">·</span>
+          <span class="text-sm text-muted">{{ rd.get('daily_commitment_hours', 2) }}h/day recommended</span>
+        </div>
+      </div>
+      <div class="roadmap-date text-sm text-muted">{{ rm.created_at.strftime('%d %b %Y') }}</div>
+    </div>
+
+    <!-- Milestones bar -->
+    {% if rd.get('milestones') %}
+    <div class="milestones-bar">
+      {% for milestone in rd.milestones %}
+      <div class="milestone">
+        <div class="milestone-dot"></div>
+        <div class="milestone-text">{{ milestone }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Phases -->
+    {% if rd.get('phases') %}
+    <div class="roadmap-phases">
+      {% for phase in rd.phases %}
+      <div class="roadmap-phase">
+        <div class="phase-dot">{{ phase.get('phase', loop.index) }}</div>
+        <div class="phase-card">
+          <div class="phase-title">{{ phase.get('title', 'Phase ' ~ loop.index) }}</div>
+          <div class="phase-weeks">⬖ Weeks {{ phase.get('weeks', '') }}</div>
+          {% if phase.get('goals') %}
+          <ul class="phase-goals">
+            {% for goal in phase.goals %}
+            <li>{{ goal }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          {% if phase.get('resources') %}
+          <div class="resource-chips">
+            {% for res in phase.resources %}
+            <a href="{{ res.get('url', '#') }}" target="_blank" rel="noopener"
+               class="resource-chip" title="{{ res.get('type', 'resource') }}">
+              {{ '📖' if res.get('type') == 'book' else ('💻' if res.get('type') == 'practice' else ('🎯' if res.get('type') == 'project' else '🎓')) }}
+              {{ res.get('name', 'Resource') }}
+            </a>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+
+{% else %}
+<div class="empty-state fade-in">
+  <div class="empty-state-icon">⬖</div>
+  <div class="empty-state-title">No roadmap generated yet</div>
+  <p class="empty-state-sub">Select a target career above and generate your personalised learning plan.</p>
+  {% if not profile %}
+  <a href="{{ url_for('upload') }}" class="btn btn-primary">Upload CV First</a>
+  {% endif %}
+</div>
+{% endif %}
+
+<style>
+.gen-row { display: flex; gap: 12px; align-items: center; }
+.career-select { flex: 1; max-width: 360px; }
+
+.roadmap-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+.roadmap-title { font-family: var(--font-display); font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
+.roadmap-meta { display: flex; align-items: center; gap: 8px; }
+
+.milestones-bar { display: flex; gap: 0; margin-bottom: 36px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.milestone { flex: 1; padding: 16px; border-right: 1px solid var(--border); position: relative; }
+.milestone:last-child { border-right: none; }
+.milestone-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-bottom: 8px; }
+.milestone-text { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+.roadmap-phases { position: relative; }
+
+@media (max-width: 600px) { .gen-row { flex-direction: column; } .career-select { max-width: 100%; } .milestones-bar { flex-direction: column; } }
+</style>
+
+<script>
+function triggerRoadmap() {
+  const career = document.getElementById('targetCareer').value;
+  generateRoadmap(career);
+}
+</script>
+{% endblock %}

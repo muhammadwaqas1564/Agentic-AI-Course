@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}CareerMindAI — Your AI Career Mentor{% endblock %}
+
+{% block content %}
+<div class="hero fade-in">
+  <div class="hero-eyebrow">AI-Powered Career Intelligence</div>
+  <h1 class="hero-title">Your career,<br><span class="gradient-text">decided by data.</span></h1>
+  <p class="hero-sub">
+    Upload your CV and let the AI agent analyse your skills, match you to real jobs,
+    generate cover letters, and build your personalised learning roadmap — in seconds.
+  </p>
+  <div class="hero-actions">
+    <a href="{{ url_for('upload') }}" class="btn btn-primary btn-lg">
+      ↑ Upload CV &amp; Start
+    </a>
+    {% if profile %}
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-lg">
+      ◉ View Dashboard
+    </a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="features-grid fade-in fade-in-2 mt-8">
+  <div class="feature-card">
+    <div class="feature-icon">⬡</div>
+    <h3 class="feature-title">NLP CV Analysis</h3>
+    <p class="feature-desc">Extracts skills, education, and experience using spaCy NLP — no manual input needed.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">◉</div>
+    <h3 class="feature-title">Career Path Intelligence</h3>
+    <p class="feature-desc">The AI agent evaluates your readiness for each career path with honest confidence scores.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">◫</div>
+    <h3 class="feature-title">Live Job Matching</h3>
+    <p class="feature-desc">Fetches real jobs from Adzuna and ranks them by match percentage against your profile.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">⬖</div>
+    <h3 class="feature-title">Learning Roadmaps</h3>
+    <p class="feature-desc">Week-by-week learning plans with curated resources to close your skill gaps.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">✉</div>
+    <h3 class="feature-title">Cover Letter AI</h3>
+    <p class="feature-desc">Generates a personalised cover letter for every job — powered by Mistral via OpenRouter.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">◳</div>
+    <h3 class="feature-title">Auto-Apply Agent</h3>
+    <p class="feature-desc">One-click application simulation: drafts the email, logs the application, tracks history.</p>
+  </div>
+</div>
+
+<div class="agent-flow fade-in fade-in-3 mt-8">
+  <div class="card-title">Agent Decision Flow</div>
+  <div class="flow-steps">
+    {% for step in [
+      ('Observe', 'Receives CV input'),
+      ('Parse', 'NLP skill extraction'),
+      ('Analyse', 'LLM career reasoning'),
+      ('Search', 'Job market scan'),
+      ('Match', 'Score & rank jobs'),
+      ('Decide', 'Recommend actions'),
+    ] %}
+    <div class="flow-step">
+      <div class="flow-num">{{ loop.index }}</div>
+      <div class="flow-label">{{ step[0] }}</div>
+      <div class="flow-desc">{{ step[1] }}</div>
+      {% if not loop.last %}<div class="flow-arrow">→</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+.hero { max-width: 680px; padding: 20px 0 48px; }
+.hero-eyebrow { font-family: var(--font-mono); font-size: 12px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 20px; }
+.hero-title { font-family: var(--font-display); font-size: clamp(36px, 5vw, 56px); font-weight: 800; line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 20px; }
+.gradient-text { background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: 17px; color: var(--text-muted); line-height: 1.7; margin-bottom: 32px; max-width: 560px; }
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.feature-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 20px; transition: all 0.2s; }
+.feature-card:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); transform: translateY(-2px); }
+.feature-icon { font-size: 24px; margin-bottom: 14px; color: var(--accent); }
+.feature-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+.feature-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+.agent-flow { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+.flow-steps { display: flex; align-items: center; gap: 0; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.flow-step { display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; }
+.flow-num { width: 32px; height: 32px; background: color-mix(in srgb, var(--accent) 15%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--accent); }
+.flow-label { font-family: var(--font-display); font-size: 13px; font-weight: 700; }
+.flow-desc { font-size: 11px; color: var(--text-muted); text-align: center; max-width: 80px; }
+.flow-arrow { font-size: 20px; color: var(--text-dim); padding: 0 4px; align-self: center; margin-bottom: 24px; }
+
+@media (max-width: 900px) { .features-grid { grid-template-columns: 1fr 1fr; } .flow-steps { gap: 4px; } }
+@media (max-width: 600px) { .features-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}

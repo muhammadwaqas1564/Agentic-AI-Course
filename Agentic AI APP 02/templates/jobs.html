@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block title %}Job Matches — CareerMindAI{% endblock %}
+
+{% block content %}
+<div class="flex-between fade-in mb-6">
+  <div>
+    <h1 class="page-title">Job Matches</h1>
+    <p class="page-sub">{{ job_matches|length }} positions ranked by skill match · <span class="font-mono text-accent">{{ profile.get_skills()|length }} skills</span> on file</p>
+  </div>
+  <div class="flex gap-2">
+    <button class="btn btn-secondary btn-sm" onclick="filterJobs('all')">All</button>
+    <button class="btn btn-secondary btn-sm" onclick="filterJobs('high')">High Match</button>
+    <button class="btn btn-secondary btn-sm" onclick="filterJobs('med')">Moderate</button>
+  </div>
+</div>
+
+{% if job_matches %}
+<div class="jobs-grid" id="jobsGrid">
+  {% for jm in job_matches %}
+  <div class="job-card fade-in" data-score="{{ jm.match_score|int }}" style="animation-delay: {{ loop.index0 * 0.05 }}s">
+    <div class="job-card-header">
+      <div>
+        <div class="job-title">{{ jm.title }}</div>
+        <div class="job-company">{{ jm.company }}</div>
+      </div>
+      <!-- Match ring -->
+      <div class="match-ring">
+        <svg viewBox="0 0 56 56" width="56" height="56">
+          <circle class="bg-ring" cx="28" cy="28" r="22"/>
+          <circle class="fill-ring"
+            cx="28" cy="28" r="22"
+            data-pct="{{ jm.match_score|int }}"
+            style="stroke: {% if jm.match_score >= 70 %}var(--success){% elif jm.match_score >= 40 %}var(--warn){% else %}var(--danger){% endif %}"/>
+        </svg>
+        <div class="match-pct" style="color: {% if jm.match_score >= 70 %}var(--success){% elif jm.match_score >= 40 %}var(--warn){% else %}var(--danger){% endif %}">
+          {{ jm.match_score|int }}%
+        </div>
+      </div>
+    </div>
+
+    <div class="job-meta">
+      <span class="job-meta-item">◌ {{ jm.location }}</span>
+      {% if jm.salary_min and jm.salary_max %}
+      <span class="job-meta-item">£{{ (jm.salary_min/1000)|int }}k–{{ (jm.salary_max/1000)|int }}k</span>
+      {% endif %}
+    </div>
+
+    {% if jm.get_match_reasons() %}
+    <div class="match-reasons">
+      {% for reason in jm.get_match_reasons()[:2] %}
+      <span class="reason-chip">{{ reason }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <p class="job-desc">{{ jm.description }}</p>
+
+    <div class="job-actions">
+      <button class="btn btn-primary btn-sm"
+        onclick="openCoverLetterModal('{{ jm.title|e }}', '{{ jm.company|e }}', '{{ jm.description[:200]|e }}', '{{ jm.url|e }}')">
+        ✉ Cover Letter
+      </button>
+      <button class="btn btn-cyan btn-sm"
+        onclick="autoApply('{{ jm.title|e }}', '{{ jm.company|e }}', '{{ jm.url|e }}')">
+        ⚡ Auto Apply
+      </button>
+      {% if jm.url and jm.url != '#' %}
+      <a href="{{ jm.url }}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">↗ View Job</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="empty-state">
+  <div class="empty-state-icon">◫</div>
+  <div class="empty-state-title">No job matches yet</div>
+  <p class="empty-state-sub">Upload your CV to start the job matching process.</p>
+  <a href="{{ url_for('upload') }}" class="btn btn-primary">Upload CV</a>
+</div>
+{% endif %}
+
+<!-- Cover Letter Modal -->
+<div class="modal-overlay" id="coverLetterModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Generate Cover Letter</h2>
+      <button class="modal-close" onclick="closeCoverLetterModal()">✕</button>
+    </div>
+    <div class="form-group">
+      <label>Job Title</label>
+      <input type="text" id="clJobTitle" readonly style="opacity:0.7" />
+    </div>
+    <div class="form-group">
+      <label>Company</label>
+      <input type="text" id="clCompany" readonly style="opacity:0.7" />
+    </div>
+    <div class="form-group">
+      <label>Job Description (optional context)</label>
+      <textarea id="clJobDesc" rows="4" placeholder="Paste key requirements…"></textarea>
+    </div>
+    <input type="hidden" id="clJobUrl" />
+    <button class="btn btn-primary w-full" id="generateClBtn" onclick="generateCoverLetter()">
+      ⬡ Generate Cover Letter
+    </button>
+
+    <div id="clResult" style="display:none; margin-top: 20px;">
+      <div class="flex-between mb-2">
+        <label style="margin:0">Generated Cover Letter</label>
+        <button class="btn btn-secondary btn-sm" onclick="copyCoverLetter()">Copy</button>
+      </div>
+      <div class="letter-body" id="clContent"></div>
+      <div class="flex gap-2 mt-4">
+        <button class="btn btn-cyan btn-sm" id="applyWithLetterBtn"
+          onclick="applyWithLetter()">⚡ Apply with This Letter</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.jobs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+.match-reasons { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.reason-chip { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: color-mix(in srgb, var(--accent) 10%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent); color: var(--accent); }
+@media (max-width: 600px) { .jobs-grid { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+function filterJobs(level) {
+  const cards = document.querySelectorAll('.job-card');
+  cards.forEach(card => {
+    const score = parseInt(card.dataset.score || 0);
+    let show = true;
+    if (level === 'high') show = score >= 60;
+    if (level === 'med') show = score >= 30 && score < 60;
+    card.style.display = show ? '' : 'none';
+  });
+}
+
+async function applyWithLetter() {
+  const jobTitle = document.getElementById('clJobTitle').value;
+  const company = document.getElementById('clCompany').value;
+  const jobUrl = document.getElementById('clJobUrl').value;
+  const letterId = document.getElementById('clResult').dataset.letterId;
+
+  const btn = document.getElementById('applyWithLetterBtn');
+  btn.textContent = 'Applying…';
+  btn.disabled = true;
+
+  try {
+    const resp = await fetch('/api/auto-apply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ job_title: jobTitle, company, job_url: jobUrl, cover_letter_id: letterId }),
+    });
+    const data = await resp.json();
+    if (data.success) {
+      closeCoverLetterModal();
+      showToast(`Application logged for ${jobTitle}!`, 'success');
+    } else {
+      alert(data.error);
+      btn.disabled = false;
+    }
+  } catch (e) {
+    alert('Error. Please try again.');
+    btn.disabled = false;
+  }
+}
+</script>
+{% endblock %}

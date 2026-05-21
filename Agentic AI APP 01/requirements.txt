@@ -1,0 +1,4 @@
+pip install streamlit requests pandas
+pip install anthropic
+pip install google-generativeai
+

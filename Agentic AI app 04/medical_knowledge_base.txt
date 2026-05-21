@@ -1,0 +1,305 @@
+MEDICAL KNOWLEDGE BASE - AI Diagnosis Assistant
+================================================
+
+CARDIOVASCULAR DISEASES
+========================
+
+Hypertension (High Blood Pressure)
+Symptoms: persistent headaches, dizziness, blurred vision, chest pain, shortness of breath, nosebleeds, palpitations
+Risk Factors: obesity, high salt diet, smoking, alcohol, family history, age > 40, diabetes, chronic kidney disease, sedentary lifestyle
+Recommended Tests: blood pressure monitoring, ECG, echocardiogram, blood urea nitrogen (BUN), serum creatinine, lipid panel, urinalysis
+Treatment: lifestyle modification, ACE inhibitors, ARBs, calcium channel blockers, diuretics, beta-blockers
+Priority: High if BP > 180/120 (hypertensive crisis), Medium otherwise
+
+Coronary Artery Disease (CAD)
+Symptoms: chest pain (angina), shortness of breath, heart attack symptoms (crushing chest pain radiating to left arm/jaw), fatigue, nausea, sweating
+Risk Factors: high LDL cholesterol, hypertension, diabetes, smoking, obesity, family history, male gender, age > 45 men / > 55 women
+Recommended Tests: ECG, stress test, echocardiogram, coronary angiography, troponin levels, CK-MB, lipid panel, CRP
+Treatment: statins, aspirin, beta-blockers, nitroglycerin, coronary bypass surgery, angioplasty
+Priority: Critical if active chest pain, High otherwise
+
+Heart Failure
+Symptoms: shortness of breath (dyspnea), orthopnea, paroxysmal nocturnal dyspnea, leg swelling (edema), rapid weight gain, fatigue, reduced exercise tolerance, persistent cough
+Risk Factors: CAD, hypertension, diabetes, cardiomyopathy, valve disease, obesity, alcohol abuse
+Recommended Tests: BNP/NT-proBNP, echocardiogram, chest X-ray, ECG, complete metabolic panel, complete blood count
+Treatment: ACE inhibitors, ARBs, beta-blockers, diuretics, aldosterone antagonists, cardiac resynchronization therapy
+Priority: Critical if acute decompensation, High for chronic
+
+Atrial Fibrillation
+Symptoms: irregular heartbeat, palpitations, shortness of breath, dizziness, chest discomfort, fatigue
+Risk Factors: age > 65, hypertension, heart failure, CAD, thyroid disease, sleep apnea, alcohol
+Recommended Tests: ECG, Holter monitor, echocardiogram, thyroid function tests, electrolytes
+Treatment: rate control, rhythm control, anticoagulation (warfarin, DOACs), cardioversion, ablation
+Priority: High
+
+RESPIRATORY DISEASES
+====================
+
+Pneumonia
+Symptoms: fever > 38.5°C, productive cough, chest pain worsening with breathing, shortness of breath, fatigue, chills, rigors, decreased breath sounds
+Risk Factors: age > 65, immunocompromised, COPD, diabetes, smoking, alcohol, recent hospitalization, influenza
+Recommended Tests: chest X-ray, CBC with differential, blood cultures, sputum culture, procalcitonin, CRP, ABG (if severe)
+Treatment: antibiotics (amoxicillin, azithromycin, fluoroquinolones), oxygen therapy, hospitalization if severe
+Priority: High to Critical
+
+COPD (Chronic Obstructive Pulmonary Disease)
+Symptoms: chronic cough, excessive mucus, shortness of breath, wheezing, chest tightness, frequent respiratory infections
+Risk Factors: smoking (primary), occupational dust/fumes, biomass fuel exposure, alpha-1 antitrypsin deficiency, age > 40
+Recommended Tests: spirometry (FEV1/FVC < 0.70), chest X-ray, CT chest, ABG, CBC, alpha-1 antitrypsin level
+Treatment: bronchodilators (SABA, LABA), ICS, PDE4 inhibitors, oxygen therapy, pulmonary rehabilitation
+Priority: High during exacerbation, Medium for stable
+
+Asthma
+Symptoms: episodic wheezing, shortness of breath, chest tightness, cough (often nocturnal or with exercise), triggered by allergens/cold air/exercise
+Risk Factors: family history, allergies, eczema, obesity, smoking, air pollution, occupational exposures
+Recommended Tests: spirometry, peak flow monitoring, bronchodilator reversibility test, allergy testing (skin prick/RAST), FeNO
+Treatment: SABA (salbutamol), ICS, LABA, leukotriene modifiers, biologics (severe), avoid triggers
+Priority: Critical if severe attack, Medium for controlled
+
+Pulmonary Embolism
+Symptoms: sudden shortness of breath, pleuritic chest pain, hemoptysis, tachycardia, leg swelling/pain (DVT), hypoxia, syncope
+Risk Factors: prolonged immobility, recent surgery, malignancy, previous DVT/PE, oral contraceptives, pregnancy, thrombophilia
+Recommended Tests: D-dimer, CT pulmonary angiography (CTPA), V/Q scan, lower limb Doppler, ECG (S1Q3T3), echo
+Treatment: anticoagulation (heparin, LMWH, DOACs), thrombolysis if massive, IVC filter
+Priority: Critical
+
+METABOLIC AND ENDOCRINE DISEASES
+==================================
+
+Type 2 Diabetes Mellitus
+Symptoms: polyuria, polydipsia, polyphagia, unexplained weight loss, fatigue, blurred vision, slow wound healing, recurrent infections, numbness/tingling in feet
+Risk Factors: obesity (BMI > 30), family history, physical inactivity, age > 45, hypertension, dyslipidemia, gestational diabetes, PCOS, prediabetes
+Recommended Tests: fasting plasma glucose (>= 126 mg/dL), HbA1c (>= 6.5%), 2-hour OGTT (>= 200 mg/dL), random glucose (>= 200 + symptoms), lipid panel, kidney function, urine microalbumin, foot exam, eye exam
+Treatment: lifestyle modification, metformin, GLP-1 agonists, SGLT2 inhibitors, DPP4 inhibitors, sulfonylureas, insulin
+Priority: High for uncontrolled, Medium for controlled
+
+Type 1 Diabetes Mellitus
+Symptoms: rapid onset polyuria, polydipsia, weight loss, fatigue, DKA (nausea, vomiting, abdominal pain, fruity breath, altered consciousness)
+Risk Factors: family history, autoimmune diseases, viral infections
+Recommended Tests: fasting glucose, HbA1c, C-peptide (low), anti-GAD antibodies, anti-islet cell antibodies, anti-insulin antibodies, urinalysis for ketones
+Treatment: insulin (basal-bolus regimen), carbohydrate counting, glucose monitoring, CGM
+Priority: Critical if DKA
+
+Hypothyroidism
+Symptoms: fatigue, weight gain, cold intolerance, constipation, dry skin, hair loss, bradycardia, depression, cognitive slowing, menstrual irregularities
+Risk Factors: Hashimoto's thyroiditis, previous thyroid surgery/radioiodine, female gender, age > 60, family history, autoimmune diseases
+Recommended Tests: TSH (elevated), free T4 (low), anti-TPO antibodies, anti-thyroglobulin antibodies, CBC, lipid panel
+Treatment: levothyroxine replacement, monitor TSH every 6-12 months
+Priority: Medium
+
+Hyperthyroidism / Graves' Disease
+Symptoms: weight loss despite increased appetite, heat intolerance, sweating, palpitations, tremor, anxiety, diarrhea, exophthalmos (Graves'), neck swelling
+Risk Factors: Graves' disease, toxic multinodular goiter, thyroid adenoma, female gender, family history, autoimmune diseases
+Recommended Tests: TSH (suppressed), free T4 (elevated), free T3, TSH receptor antibodies, thyroid uptake scan, thyroid ultrasound
+Treatment: anti-thyroid drugs (methimazole, PTU), radioiodine, thyroidectomy, beta-blockers for symptom control
+Priority: High for thyroid storm, Medium otherwise
+
+GASTROINTESTINAL DISEASES
+===========================
+
+Gastroesophageal Reflux Disease (GERD)
+Symptoms: heartburn (burning sensation in chest after eating), regurgitation of acid, dysphagia, chronic cough, hoarseness, dental erosion
+Risk Factors: obesity, hiatal hernia, smoking, alcohol, fatty/spicy foods, caffeine, pregnancy, certain medications (NSAIDs, calcium channel blockers)
+Recommended Tests: upper endoscopy (EGD), pH monitoring (24-hour), manometry, barium swallow, H. pylori testing
+Treatment: PPIs, H2 blockers, antacids, lifestyle modification, surgical fundoplication (severe)
+Priority: Low to Medium; High if Barrett's esophagus
+
+Peptic Ulcer Disease
+Symptoms: epigastric pain (burning/gnawing), nausea, vomiting, bloating, dark stools (melena), hematemesis, weight loss, pain relieved or worsened by food
+Risk Factors: H. pylori infection (primary), NSAIDs/aspirin use, smoking, stress, alcohol, Zollinger-Ellison syndrome
+Recommended Tests: upper endoscopy, H. pylori testing (breath test, stool antigen, serology), CBC (for bleeding), gastrin levels
+Treatment: H. pylori eradication (triple therapy), PPIs, H2 blockers, stop NSAIDs, bismuth subsalicylate
+Priority: High if bleeding, Medium otherwise
+
+Irritable Bowel Syndrome (IBS)
+Symptoms: recurrent abdominal pain associated with defecation, change in bowel habits (diarrhea, constipation, or mixed), bloating, mucus in stool, no alarm features
+Risk Factors: female gender, age < 50, history of GI infections, anxiety, depression, food sensitivities, family history
+Recommended Tests: diagnosis of exclusion; CBC, CRP, ESR, fecal calprotectin, colonoscopy (if alarm features), celiac disease serology
+Treatment: dietary modification (low FODMAP), antispasmodics, antidiarrheals (loperamide), laxatives, antidepressants (TCAs, SSRIs), rifaximin
+Priority: Low to Medium
+
+Inflammatory Bowel Disease (IBD)
+Symptoms: chronic diarrhea (often bloody in UC), abdominal pain and cramping, weight loss, fatigue, fever, extraintestinal manifestations (arthritis, uveitis, skin lesions)
+Risk Factors: family history, autoimmune predisposition, smoking (increases Crohn's risk), NSAIDs, previous GI infection, Western diet
+Recommended Tests: colonoscopy with biopsy (gold standard), CRP, ESR, fecal calprotectin, CBC, albumin, B12, folate, iron studies, MRI enterography (Crohn's)
+Treatment: 5-ASA, corticosteroids, immunomodulators (azathioprine, 6-MP), biologics (anti-TNF, vedolizumab, ustekinumab), surgery
+Priority: High during flare, Medium for remission
+
+NEUROLOGICAL DISEASES
+======================
+
+Migraine
+Symptoms: unilateral throbbing headache (4-72 hours), nausea, vomiting, photophobia, phonophobia, aura (visual, sensory, speech disturbances)
+Risk Factors: female gender, family history, hormonal fluctuations, stress, sleep deprivation, certain foods (tyramine, caffeine), dehydration
+Recommended Tests: clinical diagnosis; CT/MRI brain (to rule out secondary causes), blood tests if new onset
+Treatment: triptans (acute), NSAIDs, antiemetics, preventive (propranolol, topiramate, amitriptyline, CGRP antagonists)
+Priority: Medium; High if thunder-clap headache (rule out SAH)
+
+Stroke (Cerebrovascular Accident)
+Symptoms: sudden facial drooping, arm weakness, speech difficulty (FAST acronym), sudden vision loss, severe headache, loss of balance, confusion
+Risk Factors: hypertension (primary), atrial fibrillation, diabetes, smoking, hyperlipidemia, obesity, previous TIA, carotid stenosis, hypercoagulable states
+Recommended Tests: urgent CT brain (no contrast to rule out hemorrhage), CT/MRI angiography, ECG, echocardiogram, CBC, coagulation studies, lipid panel, glucose
+Treatment: tPA (within 4.5 hours for ischemic), thrombectomy, antiplatelet therapy, anticoagulation (AF-related), BP management
+Priority: CRITICAL - time-sensitive emergency
+
+Epilepsy
+Symptoms: recurrent seizures (tonic-clonic, absence, focal), post-ictal confusion, tongue biting, urinary incontinence during seizure, aura
+Risk Factors: brain injury, stroke, brain tumors, CNS infection, family history, developmental disorders, febrile seizures in childhood
+Recommended Tests: EEG, MRI brain (with epilepsy protocol), blood glucose, electrolytes, toxicology screen, LP if meningitis suspected
+Treatment: antiepileptic drugs (levetiracetam, valproate, lamotrigine, carbamazepine), ketogenic diet, vagal nerve stimulator, surgery
+Priority: Critical for status epilepticus, High for new-onset
+
+Multiple Sclerosis (MS)
+Symptoms: fatigue, optic neuritis (visual loss/pain), motor weakness, sensory disturbances, bladder dysfunction, cognitive issues, balance problems, Lhermitte's sign
+Risk Factors: female gender, age 20-40, Northern European ancestry, low vitamin D, smoking, previous EBV infection, family history
+Recommended Tests: MRI brain and spine (McDonald criteria - T2 lesions), VEPs, CSF (oligoclonal bands, IgG index), blood tests to exclude alternatives
+Treatment: disease-modifying therapies (interferon beta, glatiramer, natalizumab, ocrelizumab, siponimod), steroids for relapses, symptomatic management
+Priority: High
+
+RENAL DISEASES
+==============
+
+Chronic Kidney Disease (CKD)
+Symptoms: early - often asymptomatic; late - fatigue, nausea, vomiting, loss of appetite, swelling in legs/ankles, decreased urine output, hypertension, anemia symptoms, itching, cognitive changes
+Risk Factors: diabetes (primary), hypertension (primary), glomerulonephritis, PKD, recurrent UTIs, NSAIDs overuse, contrast agents, family history
+Recommended Tests: serum creatinine, eGFR (staging), BUN, urine albumin-to-creatinine ratio (UACR), urinalysis, CBC (anemia), electrolytes, phosphate, PTH, 25-OH vitamin D, renal ultrasound
+Treatment: BP control (target <130/80), ACE inhibitors/ARBs, glucose control, dietary protein/phosphate restriction, erythropoiesis-stimulating agents, dialysis (CKD stage 5), transplant
+Priority: High for stages 4-5, Medium for stages 1-3
+
+Urinary Tract Infection (UTI)
+Symptoms: dysuria (painful urination), frequency, urgency, suprapubic pain, hematuria, cloudy/malodorous urine; pyelonephritis: flank pain, fever, rigors, nausea
+Risk Factors: female gender, sexual activity, urinary catheter, urinary tract abnormalities, menopause, pregnancy, diabetes, immunosuppression, incomplete bladder emptying
+Recommended Tests: urinalysis, urine culture and sensitivity, CBC (if pyelonephritis), renal ultrasound (if recurrent or complicated)
+Treatment: trimethoprim-sulfamethoxazole, nitrofurantoin, fluoroquinolones (complicated), cephalosporins; IV antibiotics for pyelonephritis
+Priority: High for pyelonephritis/urosepsis, Low for uncomplicated cystitis
+
+INFECTIOUS DISEASES
+===================
+
+Influenza
+Symptoms: sudden onset fever (38-40°C), headache, myalgia, malaise, dry cough, sore throat, rhinorrhea, fatigue; complications: pneumonia, myocarditis, encephalitis
+Risk Factors: age > 65, age < 5, pregnancy, immunocompromised, chronic diseases, healthcare workers
+Recommended Tests: rapid influenza diagnostic test (RIDT), RT-PCR (more sensitive), chest X-ray if complications suspected
+Treatment: antivirals (oseltamivir, zanamivir) within 48 hours, supportive care, antipyretics; annual vaccination for prevention
+Priority: High in elderly/immunocompromised, Medium in healthy adults
+
+COVID-19
+Symptoms: fever, dry cough, fatigue, loss of taste/smell (anosmia/ageusia), shortness of breath, body aches, sore throat, diarrhea; severe: pneumonia, ARDS, cytokine storm
+Risk Factors: age > 65, obesity, diabetes, hypertension, cardiovascular disease, immunocompromised, smoking, CKD
+Recommended Tests: RT-PCR (nasopharyngeal swab), rapid antigen test, chest CT (ground-glass opacities), CBC, CRP, ferritin, D-dimer, LFTs, ABG (severe)
+Treatment: antivirals (nirmatrelvir/ritonavir for high-risk), dexamethasone (severe/critical with oxygen requirement), anticoagulation, oxygen therapy, remdesivir
+Priority: Critical for severe, High for moderate
+
+Tuberculosis (TB)
+Symptoms: chronic cough > 3 weeks (productive, sometimes blood-tinged), night sweats, weight loss, fever, fatigue, chest pain; extrapulmonary: lymphadenopathy, meningitis, bone disease
+Risk Factors: close contact with TB case, immunocompromised (HIV), malnutrition, diabetes, alcohol abuse, crowded living conditions, healthcare workers, travel to endemic areas
+Recommended Tests: chest X-ray, sputum smear (AFB), sputum culture (gold standard), GeneXpert/MTB-RIF, IGRA (QuantiFERON), TST (Mantoux), HIV testing
+Treatment: RIPE regimen (rifampicin, isoniazid, pyrazinamide, ethambutol) for 6 months; directly observed therapy (DOT)
+Priority: High; Critical if MDR-TB or meningitis
+
+HEMATOLOGICAL CONDITIONS
+=========================
+
+Iron Deficiency Anemia
+Symptoms: fatigue, pallor, shortness of breath on exertion, palpitations, headache, dizziness, cold intolerance, restless legs, brittle nails, pica, koilonychia (spoon nails)
+Risk Factors: blood loss (menstruation, GI bleeding), poor dietary iron intake, malabsorption (celiac disease, post-gastric surgery), pregnancy, rapid growth, celiac disease
+Recommended Tests: CBC (low Hb, low MCV, low MCH), serum iron (low), TIBC (high), ferritin (low), peripheral blood smear (microcytic hypochromic), reticulocyte count, stool occult blood, endoscopy if GI source suspected
+Treatment: oral iron supplementation (ferrous sulfate), IV iron (if intolerant or malabsorption), treat underlying cause, dietary iron-rich foods
+Priority: High if severe (Hb < 8), Medium if mild-moderate
+
+MENTAL HEALTH CONDITIONS
+=========================
+
+Major Depressive Disorder
+Symptoms: depressed mood nearly every day, loss of interest/pleasure (anhedonia), changes in appetite/weight, sleep disturbances (insomnia/hypersomnia), fatigue, psychomotor changes, feelings of worthlessness/guilt, difficulty concentrating, recurrent thoughts of death/suicide
+Risk Factors: family history, previous episodes, chronic illness, substance abuse, adverse childhood experiences, female gender, social isolation, major life stressors
+Recommended Tests: clinical diagnosis (PHQ-9 scoring), thyroid function tests, CBC (rule out medical causes), vitamin B12, folate, vitamin D, substance use screening
+Treatment: SSRIs (first-line), SNRIs, TCAs, MAOIs, psychotherapy (CBT), ECT (severe), lifestyle modification
+Priority: Critical if suicidal ideation, High otherwise
+
+ONCOLOGY - COMMON CANCERS
+==========================
+
+Lung Cancer
+Symptoms: chronic cough, hemoptysis, chest pain, dyspnea, unexplained weight loss, hoarseness, recurrent infections, bone pain, neurological symptoms (brain mets)
+Risk Factors: smoking (primary, accounts for 85%), secondhand smoke, radon, asbestos, occupational exposures (arsenic, chromium), air pollution, family history, previous radiation to chest
+Recommended Tests: chest CT (low-dose screening), bronchoscopy, CT-guided biopsy, PET scan, MRI brain, CBC, LFTs, LDH, molecular testing (EGFR, ALK, ROS1, PD-L1)
+Treatment: surgery (early stage), chemotherapy, targeted therapy (EGFR inhibitors, ALK inhibitors), immunotherapy (PD-1/PD-L1 inhibitors), radiation
+Priority: High to Critical
+
+Colorectal Cancer
+Symptoms: change in bowel habits, rectal bleeding/blood in stool, abdominal pain/cramping, unexplained weight loss, fatigue, iron deficiency anemia, incomplete evacuation
+Risk Factors: age > 50, personal/family history of CRC or polyps, IBD, hereditary syndromes (Lynch, FAP), obesity, sedentary lifestyle, red/processed meat diet, smoking, alcohol, diabetes
+Recommended Tests: colonoscopy (gold standard), fecal occult blood test, fecal immunochemical test, CT colonography, CEA, CBC, LFTs, CT chest/abdomen/pelvis (staging)
+Treatment: surgery (primary), adjuvant chemotherapy (FOLFOX, CAPOX), EGFR inhibitors (RAS wild-type), bevacizumab, immunotherapy (MSI-H)
+Priority: High
+
+COMMON LABORATORY REFERENCE RANGES
+=====================================
+
+Complete Blood Count (CBC):
+- Hemoglobin: Men 13.5-17.5 g/dL, Women 12.0-15.5 g/dL
+- Hematocrit: Men 41-53%, Women 36-46%
+- WBC: 4,500-11,000/μL
+- Platelets: 150,000-400,000/μL
+- MCV: 80-100 fL
+
+Metabolic Panel:
+- Glucose (fasting): 70-100 mg/dL; Prediabetes: 100-125; Diabetes: ≥126
+- HbA1c: Normal <5.7%; Prediabetes 5.7-6.4%; Diabetes ≥6.5%
+- Creatinine: Men 0.7-1.2 mg/dL, Women 0.5-1.0 mg/dL
+- eGFR: ≥90 (normal), 60-89 (mild), 30-59 (moderate), 15-29 (severe), <15 (kidney failure)
+- Sodium: 135-145 mEq/L
+- Potassium: 3.5-5.0 mEq/L
+- BUN: 7-20 mg/dL
+- ALT: 7-40 U/L
+- AST: 10-40 U/L
+- Total Bilirubin: 0.2-1.2 mg/dL
+- Albumin: 3.5-5.0 g/dL
+
+Lipid Panel:
+- Total cholesterol: <200 mg/dL desirable
+- LDL: <100 mg/dL optimal; <70 for very high risk
+- HDL: Men >40 mg/dL, Women >50 mg/dL
+- Triglycerides: <150 mg/dL normal; ≥500 risk for pancreatitis
+
+Thyroid:
+- TSH: 0.4-4.0 mIU/L
+- Free T4: 0.8-1.8 ng/dL
+- Free T3: 2.3-4.2 pg/mL
+
+Cardiac Markers:
+- Troponin I: <0.04 ng/mL (elevated in MI, myocarditis)
+- BNP: <100 pg/mL normal; >400 likely heart failure
+- CK-MB: <25 U/L
+
+Inflammatory Markers:
+- CRP: <1.0 mg/L (low risk); 1-3 mg/L (moderate); >3 mg/L (high risk)
+- ESR: Men <15 mm/hr, Women <20 mm/hr
+- Procalcitonin: <0.25 ng/mL (low bacterial infection risk)
+
+PRIORITY LEVEL DEFINITIONS
+============================
+
+CRITICAL: Immediate medical attention required, life-threatening conditions
+- Chest pain with ECG changes (MI), stroke symptoms, severe sepsis, anaphylaxis,
+  DKA, pulmonary embolism, respiratory failure, suicidal ideation with plan
+
+HIGH: Urgent evaluation needed, significant health risk within days
+- Uncontrolled hypertension, new-onset severe symptoms, cancer concerns,
+  significant anemia, worsening chronic disease
+
+MEDIUM: Requires medical evaluation within days to weeks
+- Stable chronic conditions requiring optimization, mild to moderate symptoms,
+  preventive care, routine monitoring concerns
+
+LOW: Routine follow-up appropriate within weeks to months
+- Mild symptoms with low risk, preventive screenings, chronic disease maintenance
+
+IMPORTANT DISCLAIMERS
+======================
+This AI assistant is for educational and informational purposes only.
+It does NOT replace professional medical advice, diagnosis, or treatment.
+Always consult a qualified healthcare provider for medical decisions.
+In an emergency, call your local emergency services immediately.
+Confidence levels are estimates and should be interpreted cautiously.

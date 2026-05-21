@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ResearchFlow · Insights for “{{ topic }}”</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-deep: #05070c;
+      --bg-surface: #0b0f17;
+      --bg-card: #11141f;
+      --border-light: #1a1f2e;
+      --border-med: #272e3f;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-glow: rgba(59,130,246,0.2);
+      --text-primary: #f0f3fa;
+      --text-secondary: #9aa8c2;
+      --text-muted: #5f6e8a;
+      --success-emerald: #10b981;
+      --radius-card: 20px;
+      --radius-sm: 12px;
+      --shadow-elevated: 0 20px 35px -12px rgba(0,0,0,0.5);
+      --transition: all 0.2s ease;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    /* ambient background */
+    .bg-aura {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .bg-aura::before {
+      content: '';
+      position: absolute;
+      top: -30%;
+      left: -20%;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(59,130,246,0.2), transparent 70%);
+      filter: blur(100px);
+    }
+    .bg-aura::after {
+      content: '';
+      position: absolute;
+      bottom: -20%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(6,182,212,0.15), transparent 70%);
+      filter: blur(90px);
+    }
+
+    /* navigation */
+    .glass-nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(5,7,12,0.8);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-light);
+      padding: 0.9rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      font-weight: 800;
+      font-size: 1.2rem;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-decoration: none;
+      letter-spacing: -0.3px;
+    }
+
+    .nav-search-form {
+      flex: 1;
+      max-width: 500px;
+      display: flex;
+      gap: 8px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: 60px;
+      padding: 4px 6px 4px 16px;
+      transition: var(--transition);
+    }
+    .nav-search-form:focus-within {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+    .nav-search-form input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 8px 0;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .nav-search-form button {
+      background: var(--gradient-brand);
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      border: none;
+      border-radius: 40px;
+      padding: 6px 18px;
+      font-weight: 600;
+      font-size: 0.75rem;
+      color: white;
+      cursor: pointer;
+    }
+    .home-link {
+      background: transparent;
+      border: 1px solid var(--border-light);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .home-link:hover {
+      border-color: var(--accent-blue);
+      color: white;
+    }
+
+    main {
+      position: relative;
+      z-index: 2;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    .header-section {
+      margin-bottom: 2.5rem;
+    }
+    .topic-badge {
+      display: inline-block;
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.25);
+      border-radius: 60px;
+      padding: 4px 14px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      color: var(--accent-cyan);
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.5rem;
+    }
+    .highlight {
+      background: linear-gradient(145deg, var(--accent-blue), var(--accent-cyan));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .result-count {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.02);
+      padding: 4px 12px;
+      border-radius: 40px;
+    }
+
+    /* error styling */
+    .error-modern {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: var(--radius-card);
+      padding: 2rem;
+      text-align: center;
+      backdrop-filter: blur(4px);
+    }
+    .error-modern p {
+      color: #fca5a5;
+      margin-bottom: 1.2rem;
+    }
+    .btn-outline-light {
+      background: transparent;
+      border: 1px solid var(--border-med);
+      color: var(--text-secondary);
+      padding: 8px 24px;
+      border-radius: 40px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: var(--transition);
+    }
+    .btn-outline-light:hover {
+      border-color: var(--accent-blue);
+      color: white;
+    }
+
+    /* paper card modern */
+    .paper-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-card);
+      padding: 1.6rem 1.8rem;
+      margin-bottom: 1.5rem;
+      transition: var(--transition);
+      backdrop-filter: blur(2px);
+    }
+    .paper-card:hover {
+      border-color: var(--border-med);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-elevated);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .rank {
+      font-family: monospace;
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.3);
+      padding: 2px 12px;
+      border-radius: 60px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--accent-blue);
+    }
+    .title-link {
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      flex: 1;
+    }
+    .title-link a {
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .title-link a:hover {
+      color: var(--accent-cyan);
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    .meta-data {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      border-bottom: 1px dashed var(--border-light);
+      padding-bottom: 0.8rem;
+    }
+    .meta-data span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* tabs */
+    .tab-bar {
+      display: flex;
+      gap: 6px;
+      margin: 1rem 0 1.2rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 2px;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 6px 16px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      border-radius: 30px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .tab-btn.active {
+      background: rgba(59,130,246,0.15);
+      color: var(--accent-cyan);
+    }
+    .tab-btn:hover:not(.active) {
+      color: var(--text-primary);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .tab-pane {
+      display: none;
+      animation: fadeSlide 0.25s ease;
+    }
+    .tab-pane.active {
+      display: block;
+    }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .summary-content {
+      background: rgba(6,182,212,0.03);
+      border-left: 3px solid var(--accent-cyan);
+      padding: 1rem 1.3rem;
+      border-radius: 0 14px 14px 0;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #e2e8f0;
+    }
+
+    .keypoints-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .keypoints-list li {
+      display: flex;
+      gap: 10px;
+      font-size: 0.88rem;
+      color: #cbd5e6;
+      align-items: baseline;
+    }
+    .keypoints-list li::before {
+      content: "▹";
+      color: var(--success-emerald);
+      font-weight: 600;
+    }
+
+    .abstract-text {
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      background: rgba(0,0,0,0.2);
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .full-link {
+      margin-top: 1.2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--accent-blue);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .full-link:hover {
+      color: var(--accent-cyan);
+    }
+
+    /* empty state */
+    .empty-state {
+      text-align: center;
+      background: var(--bg-surface);
+      border-radius: var(--radius-card);
+      padding: 3rem;
+      border: 1px solid var(--border-light);
+    }
+
+    @media (max-width: 680px) {
+      .glass-nav {
+        padding: 0.8rem 1rem;
+        gap: 0.8rem;
+      }
+      .paper-card {
+        padding: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="bg-aura"></div>
+
+<nav class="glass-nav">
+  <a href="/" class="logo">✦ ResearchFlow</a>
+  <form action="/search" method="POST" class="nav-search-form">
+    <input type="text" name="topic" value="{{ topic }}" placeholder="New query... e.g. neural rendering" required />
+    <button type="submit">Search</button>
+  </form>
+  <a href="/" class="home-link">← Dashboard</a>
+</nav>
+
+<main>
+  <div class="header-section">
+    <div class="topic-badge">🔍 RESEARCH SYNTHESIS</div>
+    <h1>Insights for <span class="highlight">“{{ topic }}”</span></h1>
+    {% if papers %}
+    <div class="result-count">
+      <span>📄</span> {{ papers | length }} core papers · AI‑augmented
+    </div>
+    {% endif %}
+  </div>
+
+  {% if error %}
+  <div class="error-modern">
+    <p>⚠️ {{ error }}</p>
+    <a href="/" class="btn-outline-light">⟳ Start fresh</a>
+  </div>
+
+  {% elif papers %}
+    {% for paper in papers %}
+    <div class="paper-card" data-paper-idx="{{ loop.index }}">
+      <div class="card-header">
+        <span class="rank">#{{ "%02d" % loop.index }}</span>
+        <div class="title-link">
+          <a href="{{ paper.link }}" target="_blank" rel="noopener noreferrer">{{ paper.title }}</a>
+        </div>
+      </div>
+
+      <div class="meta-data">
+        <span>👥 {{ paper.authors }}</span>
+        <span>📅 {{ paper.year }}</span>
+        <span>🏛️ DOI / arXiv</span>
+      </div>
+
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="summary-{{ loop.index }}">📘 AI Summary</button>
+        <button class="tab-btn" data-tab="points-{{ loop.index }}">⚡ Key points</button>
+        <button class="tab-btn" data-tab="abstract-{{ loop.index }}">📄 Abstract</button>
+      </div>
+
+      <div id="summary-{{ loop.index }}" class="tab-pane active">
+        <div class="summary-content">{{ paper.summary }}</div>
+      </div>
+
+      <div id="points-{{ loop.index }}" class="tab-pane">
+        {% if paper.key_points %}
+        <ul class="keypoints-list">
+          {% for point in paper.key_points %}
+          <li>{{ point }}</li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p style="color: var(--text-muted); font-size: 0.85rem;">No specific bullet points extracted for this paper.</p>
+        {% endif %}
+      </div>
+
+      <div id="abstract-{{ loop.index }}" class="tab-pane">
+        <div class="abstract-text">{{ paper.abstract }}</div>
+      </div>
+
+      <a href="{{ paper.link }}" target="_blank" class="full-link">
+        <span>📖 Read full paper</span> <span>↗</span>
+      </a>
+    </div>
+    {% endfor %}
+
+  {% else %}
+  <div class="empty-state">
+    <p style="color: var(--text-secondary); margin-bottom: 1rem;">🔎 No research results found for this topic.</p>
+    <a href="/" class="btn-outline-light">Explore another subject</a>
+  </div>
+  {% endif %}
+</main>
+
+<script>
+  (function() {
+    // Attach tab switching for all paper cards
+    const allCards = document.querySelectorAll('.paper-card');
+    allCards.forEach(card => {
+      const tabBtns = card.querySelectorAll('.tab-btn');
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          const targetId = this.getAttribute('data-tab');
+          if (!targetId) return;
+
+          // Deactivate all tabs and panes inside this specific card
+          const siblingBtns = card.querySelectorAll('.tab-btn');
+          siblingBtns.forEach(btn => btn.classList.remove('active'));
+
+          const panes = card.querySelectorAll('.tab-pane');
+          panes.forEach(pane => pane.classList.remove('active'));
+
+          // Activate clicked button & corresponding pane
+          this.classList.add('active');
+          const activePane = document.getElementById(targetId);
+          if (activePane) activePane.classList.add('active');
+        });
+      });
+    });
+  })();
+</script>
+</body>
+</html>
