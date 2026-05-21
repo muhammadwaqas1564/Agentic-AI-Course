@@ -1,132 +1,122 @@
-# Agentic AI Course
+# 🧠 Agentic AI Course
 
-A complete collection of practical **Agentic AI**, **Generative AI**, and **LLM-powered applications** built using modern AI frameworks, open-source models, and free AI APIs.
+## *Master Modern AI Through Practical Implementation*
 
-This repository contains multiple hands-on AI applications covering:
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![LangChain](https://img.shields.io/badge/Powered%20by-LangChain-orange.svg)](https://www.langchain.com/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-- RAG (Retrieval-Augmented Generation)
-- Single AI Agents
-- Multi-Agent Systems
-- Supervisor-Based Multi-Agent Architectures
-- Generative AI Applications
-- Local LLM Deployment
-- API-Based LLM Integrations
-
-The goal of this repository is to provide real-world implementations of modern AI engineering concepts using lightweight, scalable, and production-oriented architectures.
+> A comprehensive, production-ready collection of **Agentic AI**, **Generative AI**, and **LLM-powered applications** built with modern frameworks, open-source models, and free-tier APIs.
 
 ---
 
-# Applications Included
+## 📌 Overview
 
-This repository contains multiple AI applications such as:
+This repository delivers hands-on implementations of cutting-edge AI engineering concepts, designed for developers who want to bridge the gap between theory and real-world application.
 
-- Agentic AI App 01
-- Agentic AI App 02
-- Agentic AI App 03
-- Agentic AI App 04
-- Agentic AI App 05
-- Agentic AI App 06
-- Agentic AI App 07
-- Agentic AI App 08
-- Agentic AI App 09
-- Agentic AI App 10
+### 🎯 Core Domains Covered
 
-Each project demonstrates different concepts and workflows in modern AI systems.
+| Domain | Description |
+|--------|-------------|
+| **RAG** | Retrieval-Augmented Generation for context-aware Q&A |
+| **Single Agents** | Tool-calling & task-automation agents |
+| **Multi-Agent Systems** | Collaborative agent swarms with delegation |
+| **Supervisor Architectures** | Hierarchical orchestration of AI workflows |
+| **GenAI Applications** | Chatbots, assistants, research systems |
+| **Local LLMs** | On-device inference with Ollama & open models |
 
 ---
 
-# Topics Covered
+## 📂 Applications Included
 
-## Retrieval-Augmented Generation (RAG)
+| # | Project |
+|---|---------|
+| 01 | Agentic AI App 01 | 
+| 02 | Agentic AI App 02 | 
+| 03 | Agentic AI App 03 | 
+| 04 | Agentic AI App 04 | 
+| 05 | Agentic AI App 05 | 
+| 06 | Agentic AI App 06 |
+| 07 | Agentic AI App 07 | 
+| 08 | Agentic AI App 08 |
 
-- Document Retrieval
-- Vector Databases
-- Semantic Search
-- Embedding Models
-- Context-Aware Question Answering
 
-## AI Agents
-
-- Tool Calling Agents
-- Task Execution Agents
-- Autonomous Workflows
-- Decision-Making Pipelines
-
-## Multi-Agent Systems
-
-- Collaborative Agents
-- Agent Communication
-- Task Delegation
-- Workflow Coordination
-
-## Supervisor-Based Agents
-
-- Supervisor Agent Architecture
-- Agent Routing
-- Agent Orchestration
-- Hierarchical AI Systems
-
-## Generative AI Applications
-
-- AI Chat Applications
-- AI Assistants
-- Research Systems
-- LLM-Based Automation
+> Each project is self-contained and demonstrates distinct architectural patterns used in modern AI systems.
 
 ---
 
-# Technologies Used
+## 🧪 Topics in Depth
 
-## Frameworks
+### 🔍 Retrieval-Augmented Generation (RAG)
+- Document chunking & retrieval
+- Vector database integration
+- Semantic search with embeddings
+- Context-aware response generation
 
-- Python
-- Flask
-- Streamlit
-- LangChain
+### 🤖 AI Agents
+- Tool-calling & function execution
+- Autonomous task workflows
+- Stateful decision-making
 
-## LLM Providers & APIs
+### 🌐 Multi-Agent Systems
+- Inter-agent communication protocols
+- Task decomposition & delegation
+- Collaborative problem-solving
 
-- Gemini
-- Groq
-- DeepSeek
-- OpenRouter
-- Hugging Face
-- Ollama
-- Llama Models
+### 🧠 Supervisor-Based Agents
+- Centralized agent orchestration
+- Dynamic routing & task assignment
+- Hierarchical AI system design
 
-## Local LLM Deployment
-
-- Ollama Local Models
-- Local Inference Pipelines
-- Open-Source LLM Integration
-
----
-
-# Models Used
-
-This repository uses multiple free and open-source models including:
-
-- Llama 3
-- DeepSeek Models
-- Gemma
-- Mistral
-- Phi Models
-- OpenChat Models
+### ⚡ Generative AI Applications
+- AI chat interfaces
+- Intelligent assistants
+- LLM-powered research tools
 
 ---
 
-# Features
+## 🛠️ Technology Stack
 
-- Modern AI Workflows
-- Modular Architecture
-- Lightweight Implementations
-- Beginner-Friendly Structure
-- Production-Oriented Design
-- Free API Integration
-- Local Model Deployment
-- Real-World AI Engineering Concepts
+| Category | Tools & Frameworks |
+|----------|--------------------|
+| **Languages** | Python 3.8+ |
+| **Web Frameworks** | Flask, Streamlit |
+| **Agent Framework** | LangChain |
+| **LLM APIs** | Gemini, Groq, DeepSeek, OpenRouter, Hugging Face |
+| **Local Inference** | Ollama, Llama.cpp |
+| **Models** | Llama 3, Gemma, Mistral, Phi, OpenChat |
+| **Vector DBs** | Chroma, FAISS (per project) |
 
 ---
+
+## 🧬 Models Utilized
+
+All implementations support open-source & free-tier models:
+
+- ✅ Llama 3 (8B, 70B)
+- ✅ DeepSeek series
+- ✅ Gemma (2B, 7B)
+- ✅ Mistral (7B)
+- ✅ Phi models (1.5B, 2B)
+- ✅ OpenChat
+
+> *Local deployment instructions included for each model variant.*
+
+---
+
+## ✨ Key Features
+
+- 🔁 **Modular Architecture** – Easy to extend or embed
+- 📘 **Beginner to Advanced** – Progressive complexity across projects
+- 💰 **Free API Integration** – No paid tier required for core features
+- 🖥️ **Local Model Support** – Run fully offline with Ollama
+- 🏭 **Production-Oriented** – Patterns ready for real-world deployment
+- 🧪 **Hands-On Learning** – Every concept includes working code
+
+---
+
+## 🚀 Getting Started
 
 # Installation
 
@@ -191,9 +181,7 @@ Agentic-AI-Course/
 ├── Agentic AI App 05/
 ├── Agentic AI App 06/
 ├── Agentic AI App 07/
-├── Agentic AI App 08/
-├── Agentic AI App 09/
-└── Agentic AI App 10/
+└── Agentic AI App 08/
 ```
 
 ---
