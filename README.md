@@ -123,7 +123,7 @@ All implementations support open-source & free-tier models:
 Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/Agentic-AI-Course.git
+git clone https://github.com/muhammadwaqas1564/Agentic-AI-Course.git
 ```
 
 Move into the project:
